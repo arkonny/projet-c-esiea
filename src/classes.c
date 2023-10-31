@@ -9,7 +9,7 @@ struct Livre
         int id_user
     };
 
-struct User
+struct Compte
     {
         int id_user;
         char nom[100];
