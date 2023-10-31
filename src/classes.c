@@ -11,7 +11,7 @@ struct Livre
         char date_e[11];
     };
 
-struct User
+struct Compte
     {
         int id_user;
         char nom[100];
