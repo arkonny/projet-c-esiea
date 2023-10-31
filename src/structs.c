@@ -1,4 +1,5 @@
-#include <stdlib.h>
+#include <stdio.h>
+#include "all.h"
 
 struct Livre
     {
@@ -21,7 +22,3 @@ struct Compte
         char droit[10];
     };
 
-int main(){
-    
-    return 0; 
-}

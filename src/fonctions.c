@@ -1,6 +1,6 @@
 #include <stdio.h>
+#include "all.h"
 
-int main() {
-
-    return 0;
+Livre dispo(char *s){
+    
 }
