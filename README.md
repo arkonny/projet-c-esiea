@@ -1,5 +1,5 @@
 # projet-c-esiea
-Database diagram : [Draw.io](https://app.diagrams.net/#Harkonny%2Fprojet-c-esiea%2Fmain%2FDataBase_Diagram.drawio)  
+Database diagram : [Draw.io](https://app.diagrams.net/#Harkonny%2Fprojet-c-esiea%2Fmain%2Fmedias%2FDataBase_Diagram.drawio)  
 ![Diagrame utilisé pour la base de donnée](./medias/DataBase_Diagram.svg)
 
 On n'a qu'__UN__ exemplaire de chaque livre
