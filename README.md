@@ -1,4 +1,6 @@
 # projet-c-esiea
+Database diagram : [Draw.io](https://app.diagrams.net/#Harkonny%2Fprojet-c-esiea%2Fmain%2FDataBase_Diagram.drawio)
+
 On n'a qu'__UN__ exemplaire de chaque livre
 Un livre emprunté ne peut pas être emprunté par quelqu'un d'autre
 
