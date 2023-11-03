@@ -2,7 +2,7 @@
 #define ALL_H
 Livre find(char *s);
 void emprunt(Livre l);
-void retour{Livre l};
+void retour(Livre l);
 void list_d();
 void list_e();
 void save();
