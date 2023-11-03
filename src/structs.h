@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include "all.h"
 
-struct Livre
+typedef struct Livre
     {
         int isbn;
         char titre[100];
@@ -10,9 +9,9 @@ struct Livre
         int id_user;
         int disponibilite;
         char date_e[11];
-    };
+    } Livre;
 
-struct Compte
+typedef struct Compte
     {
         int id_user;
         char nom[100];
@@ -20,5 +19,5 @@ struct Compte
         char mail[100];
         char mdp[100];
         char droit[10];
-    };
+    } Compte;
 
