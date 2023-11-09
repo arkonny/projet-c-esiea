@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #include <sqlite3.h>
 #include <stdio.h>
 
@@ -37,12 +36,5 @@ int db_create() {
   sqlite3_close(db);
   return 0;
 }
-=======
-#include <stdio.h>
-#include "all.h"
 
-int main(int argc, char** argv){
-    
-    return 0;
-}
->>>>>>> f9413c0c9c5d5233e2c8e60f3e1a7c63c1e8a1bb
+int main(int argc, char **argv) { return 0; }
