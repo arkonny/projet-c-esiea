@@ -1,24 +1,23 @@
-#include <stdlib.h>
+#include <stdio.h>
 
-struct Livre
+typedef struct Livre
     {
+        int isbn;
         char titre[100];
         char auteur[100];
-        int isbn;
         char genre[100];
-        int id_user
-    };
+        int id_user;
+        int disponibilite;
+        char date_e[11];
+    } Livre;
 
-struct Compte
+typedef struct Compte
     {
         int id_user;
         char nom[100];
         char prenom[100];
         char mail[100];
         char mdp[100];
-    };
+        char droit[10];
+    } Compte;
 
-int main(){
-    
-    return 0; 
-}

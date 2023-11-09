@@ -1,6 +1,26 @@
 #include <stdio.h>
+#include "all.h"
 
-int main() {
+Livre dispo(char *s){
+    
+}
 
-    return 0;
+void emprunt(Livre l){
+
+}
+
+void retour(Livre l){
+
+}
+
+void list_d(){
+
+}
+
+void list_e(){
+
+}
+
+void save(){
+    
 }
