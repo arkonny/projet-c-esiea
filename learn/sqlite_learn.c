@@ -9,7 +9,7 @@ int main(void) {
   sqlite3 *db;
   char *err_msg = 0;
 
-  int rc = sqlite3_open("test.db", &db);
+  int rc = sqlite3_open("biblio.db", &db);
 
   if (rc != SQLITE_OK) {
     fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
@@ -17,7 +17,7 @@ int main(void) {
     return 1;
   }
 
-  char *sql = "SELECT * FROM Cars";
+  char *sql = "SELECT * FROM Livre";
 
   rc = sqlite3_exec(db, sql, callback, 0, &err_msg);
 
