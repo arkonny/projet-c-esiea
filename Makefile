@@ -1,63 +1,101 @@
-#############################################################################
-# Fichier Makefile 
-# UE MAP401 - DLST - UGA - 2020/2021
-#############################################################################
-# utilisation des variables internes $@ $< $^ $*
-# $@ : correspond au nom de la cible
-# $< : correspond au nom de la premiere dependance
-# $^ : correspond a toutes les dependances
-# $* : correspond au nom du fichier sans extension 
-#       (dans les regles generiques uniquement)
-#############################################################################
-# information sur la regle executee avec la commande @echo
-# (une commande commencant par @ n'est pas affichee a l'ecran)
-#############################################################################
+#
+# 'make'        build executable file 'main'
+# 'make clean'  removes all .o and executable files
+#
 
-
-#############################################################################
-# definition des variables locales
-#############################################################################
-
-# compilateur C
+# define the C compiler to use
 CC = gcc
-# chemin d'acces aux librairies (binaires)
-LIBDIR = sqlite3
 
-# options de compilation
-COMPILOPTS = -g -Wall -Wextra
+# define any compile-time flags
+CFLAGS := -Wall -Wextra -g -lsqlite3
 
-# liste des executables
-EXECUTABLES = sqlite_learn
+# define library paths in addition to /usr/lib
+#   if I wanted to include libraries not in /usr/lib I'd specify
+#   their path using -Lpath, something like:
+LFLAGS := 
 
-# Dossiers :
-# - src : contient les fichiers sources
-SRC = src
-# - bin : contient les executables
-BIN = bin
+# define output directory
+OUTPUT	:= output
 
-#############################################################################
-# definition des regles
-#############################################################################
+# define source directory
+SRC		:= src
 
-########################################################
-# la regle par defaut
-all : $(EXECUTABLES)
+# define include directory
+INCLUDE	:= include
 
-########################################################
-# regle generique : 
-#  remplace les regles de compilation separee de la forme
-#	module.o : module.c module.h
-#		$(CC) -c $(COMPILOPTS) module.c
-%.o : %.c %.h
-	@echo ""
-	@echo "---------------------------------------------"
-	@echo "Compilation du module "$*
-	@echo "---------------------------------------------"
-	$(CC) -c $(COMPILOPTS) $<
+# define lib directory
+LIB		:= lib
 
-sqlite_learn: $(SRC)/sqlite_learn.c
-	$(CC) -o $(BIN)/$@ $< $(COMPILOPTS) -l$(LIBDIR)
+ifeq ($(OS),Windows_NT)
+SHELL := powershell.exe
+.SHELLFLAGS := -NoProfile -Command
+MAIN	:= main.exe
+SOURCEDIRS	:= $(SRC)
+INCLUDEDIRS	:= $(INCLUDE)
+LIBDIRS		:= $(LIB)
+FIXPATH = $(subst /,\,$1)
+RM			:= rm -Force
+MD	:= mkdir
+else
+MAIN	:= main
+SOURCEDIRS	:= $(shell find $(SRC) -type d)
+INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
+LIBDIRS		:= $(shell find $(LIB) -type d)
+FIXPATH = $1
+RM = rm -f
+MD	:= mkdir -p
+endif
 
-# regle pour "nettoyer" le repertoire
+# define any directories containing header files other than /usr/include
+INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
+
+# define the C libs
+LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
+
+# define the C source files
+SOURCES		:= $(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
+
+# define the C object files 
+OBJECTS		:= $(SOURCES:.c=.o)
+
+# define the dependency output files
+DEPS		:= $(OBJECTS:.o=.d)
+
+#
+# The following part of the makefile is generic; it can be used to 
+# build any executable just by changing the definitions above and by
+# deleting dependencies appended to the file from 'make depend'
+#
+
+OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
+
+all: $(OUTPUT) $(MAIN)
+	@echo Executing 'all' complete!
+
+$(OUTPUT):
+	$(MD) $(OUTPUT)
+
+$(MAIN): $(OBJECTS) 
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
+
+# include all .d files
+-include $(DEPS)
+
+# this is a suffix replacement rule for building .o's and .d's from .c's
+# it uses automatic variables $<: the name of the prerequisite of
+# the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
+# -MMD generates dependency output files same name as the .o file
+# (see the gnu make manual section about automatic variables)
+.c.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c -MMD $<  -o $@
+
+.PHONY: clean
 clean:
-	rm -fR $(SRC)/$(EXECUTABLES) *.o *.eps
+	$(RM) $(OUTPUTMAIN)
+	$(RM) $(call FIXPATH,$(OBJECTS))
+	$(RM) $(call FIXPATH,$(DEPS))
+	@echo Cleanup complete!
+
+run: all
+	./$(OUTPUTMAIN)
+	@echo Executing 'run: all' complete!

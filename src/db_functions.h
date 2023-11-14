@@ -1,3 +1,7 @@
+#include <sqlite3.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 // Handles rc errors with err_msg
 int db_error_handler_err_msg(int rc, char *err_msg, char *prefix)
 

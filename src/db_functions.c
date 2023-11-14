@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sqlite3.h>
 
 // Handles rc errors with err_msg
 int db_error_handler_err_msg(int rc, char *err_msg, char *prefix) {
@@ -18,7 +21,7 @@ int db_error_handler(sqlite3 *db, int rc, char *prefix) {
     if (prefix != NULL) {
       prefix = "SQL error: ";
     }
-    fprintf(stderr, "%s%s\n", prefix, sqlite3_errmsg(&db));
+    fprintf(stderr, "%s%s\n", prefix, sqlite3_errmsg(db));
     return 1;
   }
   return 0;
@@ -42,7 +45,7 @@ int db_create(sqlite3 *db) {
                      "Auteur TEXT,"
                      "Genre TEXTE,"
                      "Date_emprunt DATE,"
-                     "Id_User 
+                     "Id_User" 
                      ");"
                      "CREATE TABLE Users("
                      "Id_User INT PRIMARY KEY,"
@@ -52,7 +55,7 @@ int db_create(sqlite3 *db) {
                      "Droits INT,"
                      "Public_key TEXT;";
 
-  rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+  rc = sqlite3_exec(db, sql_livres, 0, 0, &err_msg);
 
   if (db_error_handler_err_msg(rc, err_msg, "SQL error: ")) {
     sqlite3_close(db);
@@ -67,12 +70,9 @@ int db_insert_query(sqlite3 *db, char *sql_insert, int nbr_of_parameters,
                     sqlite3_stmt *res) {
 
   // Prepare the query
-  rc = sqlite3_prepare_v2(db, sql_insert, -1, &res, 0);
+  int rc = sqlite3_prepare_v2(db, sql_insert, -1, &res, 0);
 
-  if (db_error_handler(db, rc, "Failed to execute statement: ")) {
-    return rc;
-
-  } else {
+  if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
     for (int i = 0; i < nbr_of_parameters; i++) {
       int idx = sqlite3_bind_parameter_index(res, parameters[i]);
@@ -106,34 +106,20 @@ int db_insert_book(sqlite3 *db, char *ISBN, char *Titre, char *Auteur,
   return rc;
 }
 
-// Function to convert an int to a char
-char *int_to_char(int number) {
-  char *number_char = malloc(sizeof(char) * 14);
-  sprintf(number_char, "%d", number);
-  return number_char;
-}
-
 // Borrow a book
-int db_borrow_book(sqlite3 *db, int ISBN, int Id_User, char Date_emprunt) {
-  char *err_msg = 0;
-
+int db_borrow_book(sqlite3 *db, char *ISBN, int Id_User, char *Date_emprunt) {
   char *sql_insert = "UPDATE Livres SET Date_emprunt = @Date_emprunt, Id_User "
                      "= @Id_User WHERE ISBN = @ISBN;";
 
-  char *parameters_names[] = {"@ISBN", "@Id_User", "@Date_emprunt"};
-  sqlite3_stmt *res;
-
   // Prepare the query
-  rc = sqlite3_prepare_v2(db, sql_insert, -1, &res, 0);
+  sqlite3_stmt *res;
+  int rc = sqlite3_prepare_v2(db, sql_insert, -1, &res, 0);
 
-  if (db_error_handler(db, rc, "Failed to execute statement: ")) {
-    return rc;
-
-  } else {
+  if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
-    sqlite3_bind_text(res, ) int idx =
-        sqlite3_bind_parameter_index(res, parameters[i]);
-    sqlite3_bind_text(res, idx, parameters[i], -1, SQLITE_STATIC);
+    sqlite3_bind_text(res, 0, Date_emprunt, -1, SQLITE_STATIC);
+		sqlite3_bind_int(res, 1, Id_User);
+		sqlite3_bind_text(res, 2, ISBN, -1, SQLITE_STATIC);
   }
 
   sqlite3_finalize(res);
