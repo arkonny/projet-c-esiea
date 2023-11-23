@@ -1,8 +1,6 @@
-
-
-typedef struct Livre
+typedef struct Livre_s
     {
-        int isbn;
+        char isbn[14];
         char titre[100];
         char auteur[100];
         char genre[100];
@@ -11,13 +9,13 @@ typedef struct Livre
         char date_e[11];
     } Livre;
 
-typedef struct Compte
+typedef struct Compte_s
     {
         int id_user;
         char nom[100];
         char prenom[100];
         char mail[100];
         char mdp[100];
-        char droit[10];
+        int droit;
     } Compte;
 
