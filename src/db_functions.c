@@ -1,10 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sqlite3.h>
+#include "db_functions.h"
 
-/*
+/************************
 * Fonctions d'usage SQL *
-*/
+************************/
+
 // Handles rc errors with err_msg
 int db_error_handler_err_msg(int rc, char *err_msg, char *prefix) {
   if (rc != SQLITE_OK) {
@@ -50,14 +49,14 @@ int db_insert_query(sqlite3 *db, char *sql_insert, int nbr_of_parameters,
 }
 
 
-/*
+/*********************************************
 * Fonctions de gestion de la base de données *
-*/
+*********************************************/
 // La base de donnée est ouverte une seule fois au lancement du programme
 // et fermée à la fin de celui-ci
 // La variable db est globale et est utilisée par toutes les fonctions
+
 int SQL_init() {
-	sqlite3 *db;
   char *err_msg = 0;
 
   int rc = sqlite3_open("library.db", &db);
@@ -68,22 +67,8 @@ int SQL_init() {
   }
 
   char *sql_livres = "DROP TABLE IF EXISTS Livres;"
-                     "CREATE TABLE Livres("
-                     "ISBN INT PRIMARY KEY,"
-                     "Titre TEXT,"
-                     "Auteur TEXT,"
-                     "Genre TEXTE,"
-                     "Date_emprunt DATE,"
-                     "Id_User" 
-                     ");"
-                     "CREATE TABLE Users("
-                     "Id_User INT PRIMARY KEY,"
-                     "Nom TEXT,"
-                     "Prenom TEXT,"
-                     "Adresse_mail TEXT,"
-                     "Droits INT,"
-                     "Public_key TEXT;";
-
+										 "CREATE TABLE Livres(Isbn TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT,IdUser INT, Dispo INT ,DateE TEXT);";
+                     
   rc = sqlite3_exec(db, sql_livres, 0, 0, &err_msg);
 
   if (db_error_handler_err_msg(rc, err_msg, "SQL error: ")) {
@@ -94,9 +79,6 @@ int SQL_init() {
 }
 
 int SQL_open() {
-	sqlite3 *db;
-	char *err_msg = 0;
-
 	int rc = sqlite3_open("library.db", &db);
 
 	if (db_error_handler(db, rc, "Cannot open database: ")) {
@@ -108,7 +90,9 @@ int SQL_open() {
 
 int SQL_close() {
 	sqlite3_close(db);
+	return 0;
 }
+
 
 /*************************
 * Fonctions de recherche *
@@ -127,17 +111,15 @@ int SQL_disponibilite(Livre *livre);
 **********************************/
 
 int SQL_ajout(Livre *livre) {
-  char *err_msg = 0;
-
   char *sql_insert =
-      "INSERT INTO Livres VALUES(@ISBN, @Titre, @Auteur, @Genre, NULL, NULL);";
+      "INSERT INTO Livres VALUES(@ISBN, @Titre, @Auteur, @Genre, NULL, NULL, NULL);";
 
   // Initialize parameters for the query
   int nbr_of_parameters = 4;
   char *parameters_names[] = {"@ISBN", "@Titre", "@Auteur", "@Genre"};
 
-  char *parameters[] = {livre.isbn, livre.titre, livre.auteur, livre.genre};
-  sqlite3_stmt *res;
+  char *parameters[] = {livre->isbn, livre->titre, livre->auteur, livre->genre};
+  sqlite3_stmt *res = NULL;
 
   // Insert the book by calling db_insert_query
   int rc = db_insert_query(db, sql_insert, nbr_of_parameters, parameters_names,
@@ -147,7 +129,7 @@ int SQL_ajout(Livre *livre) {
   return rc;
 }
 
-int SQL_emprunt(Livre livre, Compte user) {
+int SQL_emprunt(Livre *livre, Compte *user) {
 	char *sql_insert = "UPDATE Livres SET Date_emprunt = @Date_emprunt, Id_User "
                      "= @Id_User WHERE ISBN = @ISBN;";
 
@@ -156,13 +138,13 @@ int SQL_emprunt(Livre livre, Compte user) {
   int rc = sqlite3_prepare_v2(db, sql_insert, -1, &res, 0);
 
 	// Get the current date
-	char *dateEmprunt;
+	char *dateEmprunt = "01/01/2020";
 
   if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
     sqlite3_bind_text(res, 0, dateEmprunt, -1, SQLITE_STATIC);
-		sqlite3_bind_int(res, 1, user.id_user);
-		sqlite3_bind_text(res, 2, livre.isbn, -1, SQLITE_STATIC);
+		sqlite3_bind_int(res, 1, user->id_user);
+		sqlite3_bind_text(res, 2, livre->isbn, -1, SQLITE_STATIC);
   }
 
   sqlite3_finalize(res);
