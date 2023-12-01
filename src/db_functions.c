@@ -7,7 +7,7 @@
 // Handles rc errors with err_msg
 int db_error_handler_err_msg(int rc, char *err_msg, char *prefix) {
   if (rc != SQLITE_OK) {
-    if (prefix != NULL) {
+    if (prefix == NULL) {
       prefix = "SQL error: ";
     }
     fprintf(stderr, "%s%s\n", prefix, err_msg);
@@ -20,7 +20,7 @@ int db_error_handler_err_msg(int rc, char *err_msg, char *prefix) {
 // Handles rc errors without err_msg
 int db_error_handler(sqlite3 *db, int rc, char *prefix) {
   if (rc != SQLITE_OK) {
-    if (prefix != NULL) {
+    if (prefix == NULL) {
       prefix = "SQL error: ";
     }
     fprintf(stderr, "%s%s\n", prefix, sqlite3_errmsg(db));
@@ -29,24 +29,6 @@ int db_error_handler(sqlite3 *db, int rc, char *prefix) {
   return 0;
 }
 
-// Insert parameters in a query
-int db_insert_query(sqlite3 *db, char *sql_insert, int nbr_of_parameters,
-                    char *parameters_names[], char *parameters[],
-                    sqlite3_stmt *res) {
-
-  // Prepare the query
-  int rc = sqlite3_prepare_v2(db, sql_insert, -1, &res, 0);
-
-  if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
-    // Bind the parameters
-    for (int i = 0; i < nbr_of_parameters; i++) {
-      int idx = sqlite3_bind_parameter_index(res, parameters[i]);
-      sqlite3_bind_text(res, idx, parameters[i], -1, SQLITE_STATIC);
-    }
-  }
-
-  return rc;
-}
 
 
 /*********************************************
@@ -67,7 +49,7 @@ int SQL_init() {
   }
 
   char *sql_livres = "DROP TABLE IF EXISTS Livres;"
-										 "CREATE TABLE Livres(Isbn TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT,IdUser INT, Dispo INT ,DateE TEXT);";
+										 "CREATE TABLE Livres(ISBN TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT, Id_User INT, Date_Emprunt TEXT);";
                      
   rc = sqlite3_exec(db, sql_livres, 0, 0, &err_msg);
 
@@ -105,27 +87,27 @@ int SQL_livres_empruntes(Compte *user);
 int SQL_disponibilite(Livre *livre);
 
 
-
 /**********************************
 * Fonctions de gestion des livres *
 **********************************/
 
 int SQL_ajout(Livre *livre) {
-  char *sql_insert =
-      "INSERT INTO Livres VALUES(@ISBN, @Titre, @Auteur, @Genre, NULL, NULL, NULL);";
+  char *sql_insert = "INSERT INTO Livres VALUES(@ISBN, @Titre, @Auteur, @Genre, NULL, NULL);";
+  //char *sql_insert = "INSERT INTO Livres VALUES(\"xxxx\",\"titre\", \"auteur\", \"genre\", NULL, NULL);";
 
-  // Initialize parameters for the query
-  int nbr_of_parameters = 4;
-  char *parameters_names[] = {"@ISBN", "@Titre", "@Auteur", "@Genre"};
+	sqlite3_stmt *res;
+	int rc = sqlite3_prepare_v2(db, sql_insert, -1, &res, 0);
+	
+	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
+		sqlite3_bind_text(res, 1, livre->isbn, -1, SQLITE_STATIC);
+		sqlite3_bind_text(res, 2, livre->titre, -1, SQLITE_STATIC);
+		sqlite3_bind_text(res, 3, livre->auteur, -1, SQLITE_STATIC);
+		sqlite3_bind_text(res, 4, livre->genre, -1, SQLITE_STATIC);
+		printf("Inserted arguments\n");
+	}
 
-  char *parameters[] = {livre->isbn, livre->titre, livre->auteur, livre->genre};
-  sqlite3_stmt *res = NULL;
-
-  // Insert the book by calling db_insert_query
-  int rc = db_insert_query(db, sql_insert, nbr_of_parameters, parameters_names,
-                           parameters, res);
+	sqlite3_step(res);
   sqlite3_finalize(res);
-
   return rc;
 }
 
@@ -142,14 +124,15 @@ int SQL_emprunt(Livre *livre, Compte *user) {
 
   if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
-    sqlite3_bind_text(res, 0, dateEmprunt, -1, SQLITE_STATIC);
-		sqlite3_bind_int(res, 1, user->id_user);
-		sqlite3_bind_text(res, 2, livre->isbn, -1, SQLITE_STATIC);
+    sqlite3_bind_text(res, 1, livre->date_emprunt, -1, SQLITE_STATIC);
+		sqlite3_bind_int(res, 2, user->id_user);
+		sqlite3_bind_text(res, 3, livre->isbn, -1, SQLITE_STATIC);
+		printf("Inserted arguments\n");
   }
 
+	sqlite3_step(res);
   sqlite3_finalize(res);
   return rc;
-
 }
 
 int SQL_retour(Livre *livre, Compte *user);

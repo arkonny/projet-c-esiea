@@ -1,6 +1,6 @@
 "DROP TABLE IF EXISTS comptes;""DROP TABLE IF EXISTS livres;"
 "CREATE TABLE comptes(IdUser PRIMARY KEY AUTOINCREMENT, Nom TEXT, Prenom TEXT,Mail TEXT,Mdp TEXT,Droit TEXT);"
-"CREATE TABLE livres(Isbn TEXT PRIMARY KEY , Titre TEXT,Auteur TEXT,Genre TEXT,FOREIGN KEY(IdUser) REFERENCES comptes(IdUser)), Dispo INT ,DateE TEXT;"
+"CREATE TABLE livres(Isbn TEXT PRIMARY KEY , Titre TEXT,Auteur TEXT,Genre TEXT,FOREIGN KEY(IdUser) REFERENCES comptes(IdUser)), Date_Emprunt TEXT;"
 "INSERT INTO comptes(Nom,Prenom,Mail,Mdp,Droit) VALUES ('Uriel','Anthony','ua@gmail.com','Password237','SAdmin');"
 "INSERT INTO livres (Titre, Auteur, Genre, Dispo) VALUES ('Le Seigneur des Anneaux', 'J.R.R. Tolkien', 'Fantasy', 0);"
 "INSERT INTO livres (Titre, Auteur, Genre, Dispo) VALUES ('1984', 'George Orwell', 'Dystopie', 0);"

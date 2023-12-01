@@ -5,8 +5,7 @@ typedef struct Livre_s
         char auteur[100];
         char genre[100];
         int id_user;
-        int disponibilite;
-        char date_e[11];
+        char date_emprunt[11];
     } Livre;
 
 typedef struct Compte_s
