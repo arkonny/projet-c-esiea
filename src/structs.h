@@ -1,3 +1,5 @@
+#ifndef STRUCTS_H
+#define STRUCTS_H
 typedef struct Livre_s
     {
         char isbn[14];
@@ -18,3 +20,4 @@ typedef struct Compte_s
         int droit;
     } Compte;
 
+#endif

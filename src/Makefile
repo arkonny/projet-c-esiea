@@ -33,8 +33,11 @@ LDOPTS = -lsqlite3 -L$(LIBDIR) -lm
 # options pour la recherche des fichiers .o et .h
 INCLUDEOPTS = -I$(INCDIR)
 
+# options de debuggage si make debug
+#DEBOPTS ?= -DDEBUG
+
 # options de compilation
-COMPILOPTS = -g -Wall -lsqlite3 $(INCLUDEOPTS)
+COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 $(INCLUDEOPTS)
 
 # liste des executables
 EXECUTABLES = Test_db_functions
@@ -63,7 +66,7 @@ all : $(EXECUTABLES)
 ########################################################
 # regles explicites de compilation separee de modules
 # n'ayant pas de fichier .h ET/OU dependant d'autres modules
-db_functions.o : db_functions.c db_functions.h structs.h
+db_functions.o : db_functions.c db_functions.h structs.h debug.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module db_functions"
@@ -80,7 +83,7 @@ Test%.o : Test%.c db_functions.h structs.h
 ########################################################
 # regles explicites de creation des executables
 
-Test% : Test%.o db_functions.o
+Test% : Test%.o db_functions.o debug.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@
