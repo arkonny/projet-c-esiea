@@ -5,6 +5,7 @@ sqlite3_stmt *retour_stmt = NULL;
 sqlite3_stmt *emprunt_stmt = NULL;
 sqlite3_stmt *ajout_stmt = NULL;
 sqlite3_stmt *recherche_stmt = NULL;
+sqlite3_stmt *disponibilite_stmt = NULL;
 sqlite3_stmt *livres_empruntes_stmt = NULL;
 
 /************************
@@ -98,6 +99,7 @@ int SQL_close() {
 	sqlite3_finalize(emprunt_stmt);
 	sqlite3_finalize(ajout_stmt);
 	sqlite3_finalize(recherche_stmt);
+	sqlite3_finalize(disponibilite_stmt);
 	sqlite3_finalize(livres_empruntes_stmt);
 
 	sqlite3_close(db);
@@ -111,7 +113,55 @@ int SQL_close() {
 // Les objets de type Livre et Compte ne sont pas forcément complets
 // d'où leur utilisation pour des fonctions de création de compte et de livre
 int SQL_recherche(Livre *livre, listeLivre *liste) {
-	return 0;
+	char *sql_select = "SELECT * FROM Livres WHERE ISBN LIKE @ISBN OR Titre LIKE @Titre OR Auteur LIKE @Auteur OR Genre LIKE @Genre;";
+
+	// Prepare the query
+	int rc;
+	if (recherche_stmt == NULL) {
+		rc = sqlite3_prepare_v2(db, sql_select, -1, &recherche_stmt, 0);
+		debug("sqlite3_stmt : recherche_stmt initialisé\n\n");
+	} else {
+		rc = sqlite3_reset(recherche_stmt);
+	}
+
+	// Bind the parameters
+	sqlite3_bind_text(recherche_stmt, 1, livre->isbn, -1, SQLITE_STATIC);
+	sqlite3_bind_text(recherche_stmt, 2, livre->titre, -1, SQLITE_STATIC);
+	sqlite3_bind_text(recherche_stmt, 3, livre->auteur, -1, SQLITE_STATIC);
+	sqlite3_bind_text(recherche_stmt, 4, livre->genre, -1, SQLITE_STATIC);
+
+	// Launch the query
+	int step = sqlite3_step(recherche_stmt);
+	if (step == SQLITE_DONE) {
+		debug("No result\n");
+		return step;
+	}
+
+	// Get the result
+	while (step == SQLITE_ROW) {
+		// Create the Livre object
+		Livre *livre = malloc(sizeof(Livre));
+		
+		// Get the values
+		char *isbn = (char *) sqlite3_column_text(recherche_stmt, 0);
+		char *titre = (char *) sqlite3_column_text(recherche_stmt, 1);
+		char *auteur = (char *) sqlite3_column_text(recherche_stmt, 2);
+		char *genre = (char *) sqlite3_column_text(recherche_stmt, 3);
+
+		// Copy the strings
+		init_Livre(livre, isbn, titre, auteur, genre, 0, "");
+
+		// Add the Livre object to the listLivre
+		ajouter_tete_listeLivre(liste, livre);
+		debug("Got book %d:\n",liste->taille);
+		print_Livre(liste->tete->livre);
+		debug("\n");
+
+		// Get the next result
+		step = sqlite3_step(recherche_stmt);
+	}
+
+	return step;
 }
 
 // Liste de livre doit être une liste chainée
@@ -139,7 +189,6 @@ int SQL_livres_empruntes(Compte *user, listeLivre *liste) {
 	}
 
 	// Get the result
-	int i = 0;
 	while (step == SQLITE_ROW) {
 		// Create the Livre object
 		Livre *livre = malloc(sizeof(Livre));
@@ -152,21 +201,16 @@ int SQL_livres_empruntes(Compte *user, listeLivre *liste) {
 		livre->id_user = sqlite3_column_int(livres_empruntes_stmt, 4);
 		char *date_emprunt = (char *) sqlite3_column_text(livres_empruntes_stmt, 5);
 		// Copy the strings
-		strcpy(livre->isbn, isbn);
-		strcpy(livre->titre,titre);
-		strcpy(livre->genre,genre);
-		strcpy(livre->auteur,auteur);
-		strcpy(livre->date_emprunt,date_emprunt);
+		init_Livre(livre, isbn, titre, auteur, genre, user->id_user, date_emprunt);
 
 		// Add the Livre object to the listLivre
 		ajouter_tete_listeLivre(liste, livre);
-		debug("Got book %d:\n",i+1);
+		debug("Got book %d:\n",liste->taille);
 		print_Livre(liste->tete->livre);
 		debug("\n");
 
 		// Get the next result
 		step = sqlite3_step(livres_empruntes_stmt);
-		i++;
 	}
 
 	//db_error_handler(db, step, NULL);
@@ -181,21 +225,21 @@ int SQL_disponibilite(Livre *livre) {
 	// Prepare the query
 	//db_stmt_init(recherche_stmt, sql_select);
 	int rc;
-	if (recherche_stmt == NULL) {
-		rc = sqlite3_prepare_v2(db, sql_select, -1, &recherche_stmt, 0);
+	if (disponibilite_stmt == NULL) {
+		rc = sqlite3_prepare_v2(db, sql_select, -1, &disponibilite_stmt, 0);
 	} else {
-		rc = sqlite3_reset(recherche_stmt);
+		rc = sqlite3_reset(disponibilite_stmt);
 	}
 
 	// Bind the parameters
-	sqlite3_bind_text(recherche_stmt, 1, (char *)livre->isbn, -1, SQLITE_STATIC);
+	sqlite3_bind_text(disponibilite_stmt, 1, livre->isbn, -1, SQLITE_STATIC);
 	debug("Inserted arguments\n");
 
 	// Get the result
-	int step = sqlite3_step(recherche_stmt);
+	int step = sqlite3_step(disponibilite_stmt);
 	if (step == SQLITE_ROW) {
 		// Get the values
-		char *date_emprunt = (char *) sqlite3_column_text(recherche_stmt, 0);
+		char *date_emprunt = (char *) sqlite3_column_text(disponibilite_stmt, 0);
 		strcpy(livre->date_emprunt, date_emprunt);
 		debug("date_emprunt = %s\n", livre->date_emprunt);
 		return 0;
@@ -226,10 +270,10 @@ int SQL_ajout(Livre *livre) {
 	}
 	
 	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
-		sqlite3_bind_text(ajout_stmt, 1, (char *) livre->isbn, -1, SQLITE_STATIC);
-		sqlite3_bind_text(ajout_stmt, 2, (char *) livre->titre, -1, SQLITE_STATIC);
-		sqlite3_bind_text(ajout_stmt, 3, (char *) livre->auteur, -1, SQLITE_STATIC);
-		sqlite3_bind_text(ajout_stmt, 4, (char *) livre->genre, -1, SQLITE_STATIC);
+		sqlite3_bind_text(ajout_stmt, 1, livre->isbn, -1, SQLITE_STATIC);
+		sqlite3_bind_text(ajout_stmt, 2, livre->titre, -1, SQLITE_STATIC);
+		sqlite3_bind_text(ajout_stmt, 3, livre->auteur, -1, SQLITE_STATIC);
+		sqlite3_bind_text(ajout_stmt, 4, livre->genre, -1, SQLITE_STATIC);
 		debug("Inserted arguments\n");
 	}
 
