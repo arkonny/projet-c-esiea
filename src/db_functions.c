@@ -110,8 +110,12 @@ int SQL_close() {
 *************************/
 // Les objets de type Livre et Compte ne sont pas forcément complets
 // d'où leur utilisation pour des fonctions de création de compte et de livre
-int SQL_recherche(Livre *livre, char *sortie);
-int SQL_livres_empruntes(Compte *user, Livre *livres[], int *nb_livres) {
+int SQL_recherche(Livre *livre, listeLivre *liste) {
+	return 0;
+}
+
+// Liste de livre doit être une liste chainée
+int SQL_livres_empruntes(Compte *user, listeLivre *liste) {
 	char *sql_select = "SELECT * FROM Livres WHERE Id_User = @Id_User;";
 
 	// Prepare the query
@@ -126,22 +130,43 @@ int SQL_livres_empruntes(Compte *user, Livre *livres[], int *nb_livres) {
 
 	// Bind the parameters
 	sqlite3_bind_int(livres_empruntes_stmt, 1, user->id_user);
-	debug("Inserted arguments\n");
 
-	// Get the result
+	// Launch the query
 	int step = sqlite3_step(livres_empruntes_stmt);
-	if (step == SQLITE_ROW) {
-		return 0;
-
-	} else if (step == SQLITE_DONE) {
+	debug("step = %d\n", step);
+	if (step == SQLITE_DONE) {
 		debug("No result\n");
-		return 1;
-
-	}else {
-		debug("Error\n");
 		return step;
 	}
 
+	// Get the result
+	while (step == SQLITE_ROW) {
+		// Create the Livre object
+		Livre *livre = malloc(sizeof(Livre));
+
+		// Get the values
+		livre->isbn = sqlite3_column_text(livres_empruntes_stmt, 0);
+		livre->titre = sqlite3_column_text(livres_empruntes_stmt, 1);
+		livre->auteur = sqlite3_column_text(livres_empruntes_stmt, 2);
+		livre->genre = sqlite3_column_text(livres_empruntes_stmt, 3);
+		livre->id_user = sqlite3_column_int(livres_empruntes_stmt, 4);
+		livre->date_emprunt = sqlite3_column_text(livres_empruntes_stmt, 5);
+		print_Livre(livre);
+
+		// Add the Livre object to the listLivre
+		ajouter_tete_listeLivre(liste, livre);
+		print_Livre(liste->tete->livre);
+		printf("titre = %s\n", liste->tete->livre->titre);
+		celluleLivre *cel = liste->tete;
+		printf("titre = %s\n", cel->livre->titre);
+
+		// Get the next result
+		step = sqlite3_step(livres_empruntes_stmt);
+		debug("step = %d\n", step);
+	}
+
+	db_error_handler(db, step, NULL);
+	return step;
 }
 
 
@@ -161,19 +186,16 @@ int SQL_disponibilite(Livre *livre) {
 	
 
 	// Bind the parameters
-	sqlite3_bind_text(recherche_stmt, 1, livre->isbn, -1, SQLITE_STATIC);
+	sqlite3_bind_text(recherche_stmt, 1, (char *)livre->isbn, -1, SQLITE_STATIC);
 	debug("Inserted arguments\n");
 
 	// Get the result
 	int step = sqlite3_step(recherche_stmt);
 	if (step == SQLITE_ROW) {
 		// Get the values
-		const unsigned char *date_emprunt = sqlite3_column_text(recherche_stmt, 0);
-		debug("date_emprunt = %s\n", date_emprunt);
-		// Set the values
-		strcpy(livre->date_emprunt, (char *) date_emprunt);
+		livre->date_emprunt = sqlite3_column_text(recherche_stmt, 0);
+		debug("date_emprunt = %s\n", livre->date_emprunt);
 		return 0;
-
 	} else if (step == SQLITE_DONE) {
 		debug("No result\n");
 		return 1;
@@ -202,10 +224,10 @@ int SQL_ajout(Livre *livre) {
 	debug("rc = %d\n", rc);
 	
 	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
-		sqlite3_bind_text(ajout_stmt, 1, livre->isbn, -1, SQLITE_STATIC);
-		sqlite3_bind_text(ajout_stmt, 2, livre->titre, -1, SQLITE_STATIC);
-		sqlite3_bind_text(ajout_stmt, 3, livre->auteur, -1, SQLITE_STATIC);
-		sqlite3_bind_text(ajout_stmt, 4, livre->genre, -1, SQLITE_STATIC);
+		sqlite3_bind_text(ajout_stmt, 1, (char *) livre->isbn, -1, SQLITE_STATIC);
+		sqlite3_bind_text(ajout_stmt, 2, (char *) livre->titre, -1, SQLITE_STATIC);
+		sqlite3_bind_text(ajout_stmt, 3, (char *) livre->auteur, -1, SQLITE_STATIC);
+		sqlite3_bind_text(ajout_stmt, 4, (char *) livre->genre, -1, SQLITE_STATIC);
 		debug("Inserted arguments\n");
 	}
 
@@ -230,9 +252,9 @@ int SQL_emprunt(Livre *livre, Compte *user) {
 
   if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
-    sqlite3_bind_text(emprunt_stmt, 1, livre->date_emprunt, -1, SQLITE_STATIC);
+    sqlite3_bind_text(emprunt_stmt, 1, (char *) livre->date_emprunt, -1, SQLITE_STATIC);
 		sqlite3_bind_int(emprunt_stmt, 2, user->id_user);
-		sqlite3_bind_text(emprunt_stmt, 3, livre->isbn, -1, SQLITE_STATIC);
+		sqlite3_bind_text(emprunt_stmt, 3, (char *) livre->isbn, -1, SQLITE_STATIC);
 		debug("Inserted arguments\n");
   }
 
@@ -255,7 +277,7 @@ int SQL_retour(Livre *livre) {
 
   if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
-		sqlite3_bind_text(retour_stmt, 1, livre->isbn, -1, SQLITE_STATIC);
+		sqlite3_bind_text(retour_stmt, 1, (char *) livre->isbn, -1, SQLITE_STATIC);
 		debug("Inserted arguments\n");
   }
 
@@ -279,7 +301,7 @@ int SQL_suppression(Livre *livre) {
 
 	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
 		// Bind the parameters
-		sqlite3_bind_text(suppression_stmt, 1, livre->isbn, -1, SQLITE_STATIC);
+		sqlite3_bind_text(suppression_stmt, 1, (char *) livre->isbn, -1, SQLITE_STATIC);
 		debug("Inserted arguments\n");
 	}
 

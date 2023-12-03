@@ -34,7 +34,7 @@ LDOPTS = -lsqlite3 -L$(LIBDIR) -lm
 INCLUDEOPTS = -I$(INCDIR)
 
 # options de debuggage si make debug
-#DEBOPTS ?= -DDEBUG
+DEBOPTS ?= -DDEBUG
 
 # options de compilation
 COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 $(INCLUDEOPTS)
@@ -73,7 +73,7 @@ db_functions.o : db_functions.c db_functions.h structs.h debug.h
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-Test%.o : Test%.c db_functions.h structs.h
+Test%.o : Test%.c db_functions.h structs.h debug.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module "$@
@@ -83,7 +83,7 @@ Test%.o : Test%.c db_functions.h structs.h
 ########################################################
 # regles explicites de creation des executables
 
-Test% : Test%.o db_functions.o debug.o
+Test% : Test%.o db_functions.o debug.o structs.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@

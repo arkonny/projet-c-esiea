@@ -26,9 +26,10 @@ int SQL_close();
 *************************/
 // Les objets de type Livre et Compte ne sont pas forcément complets
 // d'où leur utilisation pour des fonctions de création de compte et de livre
-int SQL_recherche(Livre *livre, char *sortie);
+int SQL_recherche(Livre *livre, listeLivre *liste);
+
 // Retourne une liste de livres empruntés par un utilisateur
-int SQL_livres_empruntes(Compte *user, Livre *livres[], int *nb_livres);
+int SQL_livres_empruntes(Compte *user, listeLivre *liste);
 
 // Complète un objet Livre avec les informations de la base de données
 int SQL_disponibilite(Livre *livre);
