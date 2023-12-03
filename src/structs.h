@@ -6,17 +6,15 @@
 #include <string.h>
 
 typedef struct {
-        const unsigned char *isbn;
-        const unsigned char *titre;
-        const unsigned char *auteur;
-        const unsigned char *genre;
+        char isbn[14];
+        char titre[100];
+        char auteur[100];
+        char genre[100];
         int id_user;
-        const unsigned char *date_emprunt;
+        char date_emprunt[10];
 } Livre;
 
 int init_Livre(Livre *livre, char *isbn, char *titre, char *auteur, char *genre, int id_user, char *date_emprunt);
-
-void liberer_Livre(Livre *livre);
 
 typedef struct {
         int id_user;

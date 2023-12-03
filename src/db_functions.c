@@ -123,49 +123,53 @@ int SQL_livres_empruntes(Compte *user, listeLivre *liste) {
 	int rc;
 	if (livres_empruntes_stmt == NULL) {
 		rc = sqlite3_prepare_v2(db, sql_select, -1, &livres_empruntes_stmt, 0);
+		debug("sqlite3_stmt : livres_empruntes_stmt initialisé\n\n");
 	} else {
 		rc = sqlite3_reset(livres_empruntes_stmt);
 	}
-	debug("rc = %d\n", rc);
 
 	// Bind the parameters
 	sqlite3_bind_int(livres_empruntes_stmt, 1, user->id_user);
 
 	// Launch the query
 	int step = sqlite3_step(livres_empruntes_stmt);
-	debug("step = %d\n", step);
 	if (step == SQLITE_DONE) {
 		debug("No result\n");
 		return step;
 	}
 
 	// Get the result
+	int i = 0;
 	while (step == SQLITE_ROW) {
 		// Create the Livre object
 		Livre *livre = malloc(sizeof(Livre));
 
 		// Get the values
-		livre->isbn = sqlite3_column_text(livres_empruntes_stmt, 0);
-		livre->titre = sqlite3_column_text(livres_empruntes_stmt, 1);
-		livre->auteur = sqlite3_column_text(livres_empruntes_stmt, 2);
-		livre->genre = sqlite3_column_text(livres_empruntes_stmt, 3);
+		char *isbn = (char *) sqlite3_column_text(livres_empruntes_stmt, 0);
+		char *titre = (char *) sqlite3_column_text(livres_empruntes_stmt, 1);
+		char *auteur = (char *) sqlite3_column_text(livres_empruntes_stmt, 2);
+		char *genre = (char *) sqlite3_column_text(livres_empruntes_stmt, 3);
 		livre->id_user = sqlite3_column_int(livres_empruntes_stmt, 4);
-		livre->date_emprunt = sqlite3_column_text(livres_empruntes_stmt, 5);
-		print_Livre(livre);
+		char *date_emprunt = (char *) sqlite3_column_text(livres_empruntes_stmt, 5);
+		// Copy the strings
+		strcpy(livre->isbn, isbn);
+		strcpy(livre->titre,titre);
+		strcpy(livre->genre,genre);
+		strcpy(livre->auteur,auteur);
+		strcpy(livre->date_emprunt,date_emprunt);
 
 		// Add the Livre object to the listLivre
 		ajouter_tete_listeLivre(liste, livre);
+		debug("Got book %d:\n",i+1);
 		print_Livre(liste->tete->livre);
-		printf("titre = %s\n", liste->tete->livre->titre);
-		celluleLivre *cel = liste->tete;
-		printf("titre = %s\n", cel->livre->titre);
+		debug("\n");
 
 		// Get the next result
 		step = sqlite3_step(livres_empruntes_stmt);
-		debug("step = %d\n", step);
+		i++;
 	}
 
-	db_error_handler(db, step, NULL);
+	//db_error_handler(db, step, NULL);
 	return step;
 }
 
@@ -182,8 +186,6 @@ int SQL_disponibilite(Livre *livre) {
 	} else {
 		rc = sqlite3_reset(recherche_stmt);
 	}
-	debug("rc = %d\n", rc);
-	
 
 	// Bind the parameters
 	sqlite3_bind_text(recherche_stmt, 1, (char *)livre->isbn, -1, SQLITE_STATIC);
@@ -193,7 +195,8 @@ int SQL_disponibilite(Livre *livre) {
 	int step = sqlite3_step(recherche_stmt);
 	if (step == SQLITE_ROW) {
 		// Get the values
-		livre->date_emprunt = sqlite3_column_text(recherche_stmt, 0);
+		char *date_emprunt = (char *) sqlite3_column_text(recherche_stmt, 0);
+		strcpy(livre->date_emprunt, date_emprunt);
 		debug("date_emprunt = %s\n", livre->date_emprunt);
 		return 0;
 	} else if (step == SQLITE_DONE) {
@@ -221,7 +224,6 @@ int SQL_ajout(Livre *livre) {
 	} else {
 		rc = sqlite3_reset(ajout_stmt);
 	}
-	debug("rc = %d\n", rc);
 	
 	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
 		sqlite3_bind_text(ajout_stmt, 1, (char *) livre->isbn, -1, SQLITE_STATIC);
@@ -231,9 +233,8 @@ int SQL_ajout(Livre *livre) {
 		debug("Inserted arguments\n");
 	}
 
-	int step = sqlite3_step(ajout_stmt);
-	debug("step = %d\n", step);
-  return step;
+	rc = sqlite3_step(ajout_stmt);
+  return rc;
 }
 
 
@@ -248,7 +249,6 @@ int SQL_emprunt(Livre *livre, Compte *user) {
 	} else {
 		rc = sqlite3_reset(emprunt_stmt);
 	}
-	debug("rc = %d\n", rc);
 
   if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
@@ -258,7 +258,7 @@ int SQL_emprunt(Livre *livre, Compte *user) {
 		debug("Inserted arguments\n");
   }
 
-	sqlite3_step(emprunt_stmt);
+	rc = sqlite3_step(emprunt_stmt);
   return rc;
 }
 
@@ -281,7 +281,7 @@ int SQL_retour(Livre *livre) {
 		debug("Inserted arguments\n");
   }
 
-	sqlite3_step(retour_stmt);
+	rc = sqlite3_step(retour_stmt);
   return rc;
 
 }
@@ -305,7 +305,7 @@ int SQL_suppression(Livre *livre) {
 		debug("Inserted arguments\n");
 	}
 
-	sqlite3_step(suppression_stmt);
+	rc = sqlite3_step(suppression_stmt);
 	return rc;
 }
 
