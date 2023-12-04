@@ -200,6 +200,7 @@ int SQL_livres_empruntes(Compte *user, listeLivre *liste) {
 		char *genre = (char *) sqlite3_column_text(livres_empruntes_stmt, 3);
 		livre->id_user = sqlite3_column_int(livres_empruntes_stmt, 4);
 		char *date_emprunt = (char *) sqlite3_column_text(livres_empruntes_stmt, 5);
+
 		// Copy the strings
 		init_Livre(livre, isbn, titre, auteur, genre, user->id_user, date_emprunt);
 

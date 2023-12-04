@@ -6,12 +6,12 @@
 #include <string.h>
 
 typedef struct {
-        char isbn[14];
-        char titre[100];
-        char auteur[100];
-        char genre[100];
+        char isbn[15];
+        char titre[101];
+        char auteur[101];
+        char genre[101];
         int id_user;
-        char date_emprunt[10];
+        char date_emprunt[11];
 } Livre;
 
 int init_Livre(Livre *livre, char *isbn, char *titre, char *auteur, char *genre, int id_user, char *date_emprunt);

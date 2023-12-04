@@ -13,10 +13,10 @@ int main() {
 
 	printf("\n=== Initialisation of Livre objects ===\n");
 	Livre *book = malloc(sizeof(Livre));
-	init_Livre(book, "xxxx","Book Title", "Author","Genre",1,""); 
+	init_Livre(book, "xxxx","Book Title", "Author","Genre (mais en anglais)",1,""); 
 	print_Livre(book);
 	Livre *book2 = malloc(sizeof(Livre));
-	init_Livre(book2, "yyyy","Titre du livre", "Auteur","Genre",0,""); 
+	init_Livre(book2, "xabx","Titre du livre", "Auteur","Genre",2,""); 
 	print_Livre(book2);
 
 	char *date = "2020-01-01";
@@ -24,6 +24,7 @@ int main() {
 	strcpy(book2->date_emprunt, date);
 
 	Compte user = {1, "Renard-Raguenaud", "Lucien", "lucienrenardraguenaud@mail.com", "mot-de-passe", 0};
+	Compte user2 = {2, "Uriel", "Anthony", "anthonyuriel@mail.com", "mot-de-passe", 0};
 
 	printf("\n=== Testing listeLivre functions ===\n");
 	listeLivre *liste_empruntes = malloc(sizeof(listeLivre));
@@ -36,7 +37,7 @@ int main() {
 	debug("result->taille = %d\n", result->taille);
 
 	
-	///*
+	/*
 	printf("\n=== Testing SQL_init ===\n");
 
 	res = SQL_init();
@@ -44,17 +45,17 @@ int main() {
 	if (res) {
 		return err();
 	}
-	//*/
+	*/
 
-	/*
+	///*
 	res = SQL_open();
 	printf("SQL_open() returned %d\n\n", res);
 	if (res) {
 		return err();
 	}
-	*/
+	//*/
 
-	///*
+	/*
 	printf("\n=== Testing SQL_ajout ===\n");
 	res = SQL_ajout(book); // returns SQLITE_DONE
 	printf("SQL_ajout(book) returned %d\n", res);
@@ -80,6 +81,7 @@ int main() {
 	if (res) {
 		return err();
 	}
+	*/
 
 	/*
 	printf("\n=== Testing SQL_retour ===\n");
@@ -101,26 +103,50 @@ int main() {
 	*/
 	
 
-	SQL_ajout(book2);
+	//SQL_ajout(book2);
 
 	SQL_emprunt(book2, &user);
 
 
-	/*
+	///*
 	printf("\n=== Testing SQL_recherche ===\n");
+	debug("Recherhe livre : ");
+	print_Livre(book2);
 	res = SQL_recherche(book2, result);
+	printf("Il y a %d livre(s) correspondand(s) :\n",result->taille);
+	celluleLivre* cel = result->tete;
+	while (cel != NULL) {
+		printf("livre: %s\n", cel->livre->titre);
+		cel = cel->suivant;
+	}
 	printf("SQL_recherche(book) returned %d\n\n", res);
-	if (res) {
+	if (res != SQLITE_DONE) {
 		return err();
 	}
-	*/
+	//*/
 
 
 	///*
 	printf("\n=== Testing SQL_livres_empruntes ===\n");
 	SQL_livres_empruntes(&user, liste_empruntes);
 	printf("Le compte %s a emprunte %d livres :\n", user.nom, liste_empruntes->taille);
-	celluleLivre* cel = liste_empruntes->tete;
+	cel = liste_empruntes->tete;
+	while (cel != NULL) {
+		printf("livre: %s\n", cel->livre->titre);
+		cel = cel->suivant;
+	}
+	printf("\nSQL_livres_empruntes(user, liste_empruntes) returned %d\n\n", res);
+	if (res != SQLITE_DONE) {
+		return err();
+	}
+	//*/
+	
+	/*
+	printf("\n=== Testing SQL_livres_empruntes ===\n");
+	liberer_listeLivre(liste_empruntes);
+	SQL_livres_empruntes(&user2, liste_empruntes);
+	printf("Le compte %s a emprunte %d livres :\n", user2.nom, liste_empruntes->taille);
+	cel = liste_empruntes->tete;
 	while (cel != NULL) {
 		printf("livre: %s\n", cel->livre->titre);
 		cel = cel->suivant;
@@ -129,7 +155,8 @@ int main() {
 	if (res) {
 		return err();
 	}
-	//*/
+	*/
+	
 
 	printf("\n=== Freeing objects ===\n");
 	debug("liberer result\n");

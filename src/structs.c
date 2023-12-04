@@ -2,12 +2,18 @@
 #include "debug.h"
 
 int init_Livre(Livre *livre, char *isbn, char *titre, char *auteur, char *genre, int id_user, char *date_emprunt) {
-	strcpy(livre->isbn,isbn);
-	strcpy(livre->titre,titre);
-	strcpy(livre->auteur,auteur);
-	strcpy(livre->genre,genre);
+	if (isbn == NULL) isbn = "";
+	if (titre == NULL) titre = "";
+	if (auteur == NULL) auteur = "";
+	if (genre == NULL) genre = "";
+	if (date_emprunt == NULL) date_emprunt = "";
+
+	strncpy(livre->isbn,isbn,14);
+	strncpy(livre->titre,titre,100);
+	strncpy(livre->auteur,auteur,100);
+	strncpy(livre->genre,genre,100);
 	livre->id_user = id_user;
-	strcpy(livre->date_emprunt,date_emprunt);
+	strncpy(livre->date_emprunt,date_emprunt,10);
 	return 0;
 }
 
@@ -21,7 +27,6 @@ void liberer_listeLivre(listeLivre* L) {
 	celluleLivre* bin;
 	int i = 0;
 	while (cel != NULL) {
-		debug("liberer_listeLivre: i = %d\n", i+1);
 		bin = cel;
 		cel = cel->suivant;
 		free(bin);
