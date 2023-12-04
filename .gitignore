@@ -1,3 +1,6 @@
+# Specific exec files
+Test_db_functions
+
 # Database files
 *.db
 
