@@ -1,5 +1,7 @@
-# Specific exec files
+# Specific files
 Test_db_functions
+medias/
+lib/
 
 # Database files
 *.db
