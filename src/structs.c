@@ -17,6 +17,19 @@ int init_Livre(Livre *livre, char *isbn, char *titre, char *auteur, char *genre,
 	return 0;
 }
 
+int init_Compte(Compte *compte, int id_user, char *nom, char *prenom, char *mail, int admin) {
+	if (nom == NULL) nom = "";
+	if (prenom == NULL) prenom = "";
+	if (mail == NULL) mail = "";
+
+	compte->id_user = id_user;
+	strncpy(compte->nom,nom,100);
+	strncpy(compte->prenom,prenom,100);
+	strncpy(compte->mail,mail,100);
+	compte->admin = admin;
+	return 0;
+}
+
 void init_listeLivre_vide(listeLivre* L) {
 	L->tete = NULL;
 	L->taille = 0;

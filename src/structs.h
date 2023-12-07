@@ -18,13 +18,13 @@ int init_Livre(Livre *livre, char *isbn, char *titre, char *auteur, char *genre,
 
 typedef struct {
         int id_user;
-        char nom[100];
-        char prenom[100];
-        char mail[100];
-        char mdp[100];
-        int droit;
+        char nom[101];
+        char prenom[101];
+        char mail[101];
+				int admin;
 } Compte;
 
+int init_Compte(Compte *compte, int id_user, char *nom, char *prenom, char *mail, int admin);
 
 typedef struct celluleLivre_s {
 	Livre *livre;

@@ -2,6 +2,7 @@
 #define DB_FUNCTIONS_H
 
 #include <sqlite3.h>
+#include <sqlite3userauth.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,9 +48,11 @@ int SQL_suppression(Livre *livre);
 /*********************************
 * Fonctions de gestion de compte *
 *********************************/
-int SQL_creation_compte(Compte *user);
-int SQL_connexion(Compte *user);
-int SQL_deconnexion(Compte *user);
+int SQL_Compte_recherche(Compte *user);
+int SQL_creation_compte(Compte *user, char *mot_de_passe);
+int SQL_connexion(Compte *user, char *mot_de_passe);
+int SQL_changement_mdp(Compte *user, char *mot_de_passe);
+int SQL_changement_mail(Compte *user, char *new_mail);
 int SQL_suppression_compte(Compte *user);
 
 #endif

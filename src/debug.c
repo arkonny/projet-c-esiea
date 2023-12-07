@@ -12,5 +12,5 @@ void print_Livre(Livre *livre) {
 }
 
 void print_Compte(Compte *compte) {
-	debug("%d, %s, %s, %s, %s, %d\n", compte->id_user, compte->nom, compte->prenom, compte->mail, compte->mdp, compte->droit);
+	debug("%d, %s, %s, %s, %d\n", compte->id_user, compte->nom, compte->prenom, compte->mail, compte->admin);
 }
