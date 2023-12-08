@@ -95,6 +95,20 @@ db_functions.o : db_functions.c db_functions.h structs.h debug.h sqlite3userauth
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
+menu.o : menu.c menu.h
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module menu"
+	@echo "---------------------------------------------"
+	$(CC) -c $(COMPILOPTS) $<
+
+fonctions.o : fonctions.c fonctions.h
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module fonctions"
+	@echo "---------------------------------------------"
+	$(CC) -c $(COMPILOPTS) $<
+
 Test%.o : Test%.c db_functions.h structs.h debug.h
 	@echo ""
 	@echo "---------------------------------------------"
@@ -102,7 +116,7 @@ Test%.o : Test%.c db_functions.h structs.h debug.h
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-Main.o : Main.c db_functions.h structs.h debug.h
+Main.o : Main.c db_functions.h structs.h debug.h menu.h fonctions.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module "$@
@@ -119,7 +133,7 @@ Test% : Test%.o db_functions.o debug.o structs.o sqlite3.o
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -g -o $@
 
-Main : Main.o db_functions.o debug.o structs.o sqlite3.o
+Main : Main.o db_functions.o debug.o structs.o sqlite3.o menu.o fonctions.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@

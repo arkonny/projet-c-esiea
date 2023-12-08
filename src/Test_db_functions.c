@@ -5,6 +5,7 @@
 #include "db_functions.h"
 
 sqlite3 *db;
+Compte *currentUser;
 
 // Main function tests each function of db_functions.c
 int main() {
