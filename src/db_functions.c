@@ -405,8 +405,6 @@ int SQL_Compte_recherche(Compte *user) {
 	// Copy the strings
 	init_Compte(user, id_user, nom, prenom, mail, admin);
 
-	step = sqlite3_step(compte_recherche_stmt);
-
 	return step;
 }
 
@@ -460,8 +458,7 @@ int SQL_creation_compte(Compte *user, char *mot_de_passe) {
 }
 
 int SQL_connexion(Compte *user, char *mot_de_passe) {
-	int rc = SQL_Compte_recherche(user);
-	printf("Got id_user %d\n", user->id_user);
+	int rc;
 
 	// Make the id_user go from int to char (for the sqlite3_user_authenticate function)
 	char *id_user = malloc(sizeof(char) * 10);

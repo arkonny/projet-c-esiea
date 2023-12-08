@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "structs.h"
+#include "debug.h"
+#include "menu.h"
+#include "fonctions.h"
 #include "db_functions.h"
 
 sqlite3 *db;
@@ -27,13 +30,11 @@ int main(int argc, char **argv) {
 		debug("La base de données n'était pas initialisée\n");
 		// Création du compte utilisateur administateur
 		char *id_user = "1";
-		char *mot_de_passe = "admin";
-		char *nom = "Admin";
-		char *prenom = "Admin";
-		char *mail = "admin@mail.com";
-// --> Mot de passe à faire saisir par l'utilisateur
-// (avec confirmation, et autres informations à saisir)
-//
+		printf("Entrez les informations du compte administrateur\n");
+		char *nom = saisie_chaine("Nom");
+		char *prenom = saisie_chaine("Prénom");
+		char *mail = saisie_chaine_double("Adresse mail");
+		char *mot_de_passe = saisie_chaine_double("Mot de passe");
 		sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
 
 		// Initialisation de la base de données
@@ -46,31 +47,25 @@ int main(int argc, char **argv) {
 
 	/************************************************
 		La base de données est initialisée
-		-> Connexion de l'utilisateur 
-				(même si créé précédemment)
+		-> Connexion de l'utilisateur
+		-> Boucle principale
+			|-> Affichage du menu principal
+			|-> Traitement du choix de l'utilisateur
+		-> Déconnexion de l'utilisateur
 	************************************************/
+
 	// Connexion de l'utilisateur
 	user_connexion(currentUser);
 
-
-	/************************************************
-		Affichage du menu principal
-		[1] 
-		[2] 
-		[3] 
-		[4] 
-		[5] 
-		[6] 
-		[7] 
-		[8] Déconnexion
-	************************************************/
-	int choix = 0;
-	
-
 	// Boucle principale
-	// -> Connexion
-	// -> Menu principal
-	// -> Déconnexion
+	int choix = 0;
+	while (choix != 8) {
+		affichage_menu_principal();
+		choix = selection(8);
+	}
+	
+	// Déconnexion de l'utilisateur
+	user_deconnexion(currentUser);
 
 	SQL_close();
   return 0;

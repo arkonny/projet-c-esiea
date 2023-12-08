@@ -11,6 +11,7 @@
 
 // La variable db est globale et est utilisée par toutes les fonctions
 extern sqlite3 *db;
+extern Compte *currentUser;
 
 /*********************************************
 * Fonctions de gestion de la base de données *
