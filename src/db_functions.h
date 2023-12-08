@@ -18,6 +18,7 @@ extern sqlite3 *db;
 // La base de donnée est ouverte une seule fois au lancement du programme
 // et fermée à la fin de celui-ci
 int SQL_init();
+int SQL_check_init();
 int SQL_open();
 int SQL_close();
 
@@ -49,6 +50,7 @@ int SQL_suppression(Livre *livre);
 * Fonctions de gestion de compte *
 *********************************/
 int SQL_Compte_recherche(Compte *user);
+int SQL_insertion_compte(Compte *user);
 int SQL_creation_compte(Compte *user, char *mot_de_passe);
 int SQL_connexion(Compte *user, char *mot_de_passe);
 int SQL_changement_mdp(Compte *user, char *mot_de_passe);

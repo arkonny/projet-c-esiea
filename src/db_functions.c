@@ -71,7 +71,9 @@ int SQL_init() {
   char *err_msg = 0;
 
   char *sql_livres = "DROP TABLE IF EXISTS Livres;"
-										 "CREATE TABLE Livres(ISBN TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT, Id_User INT, Date_Emprunt TEXT);";
+										 "CREATE TABLE Livres(ISBN TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT, Id_User INT, Date_Emprunt TEXT);"
+										 "DROP TABLE IF EXISTS Comptes;"
+										 "CREATE TABLE Comptes(Id_User INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Prenom TEXT, Mail TEXT, Admin INTEGER);";
                      
   int rc = sqlite3_exec(db, sql_livres, 0, 0, &err_msg);
   if (db_error_handler_err_msg(rc, err_msg, "SQL error: ")) {
@@ -79,6 +81,14 @@ int SQL_init() {
   }
 
   return rc;
+}
+
+int SQL_check_init() {
+	char *err_msg = 0;
+	char *sql_livres = "SELECT * FROM Livres;";
+	int rc = sqlite3_exec(db, sql_livres, 0, 0, &err_msg);
+	debug("SQL_check_init() returned %d\n", rc);
+	return rc;
 }
 
 
@@ -104,6 +114,7 @@ int SQL_close() {
 	sqlite3_finalize(changement_mail_stmt);
 
 	sqlite3_close(db);
+	free(currentUser);
 	return 0;
 }
 
@@ -399,7 +410,8 @@ int SQL_Compte_recherche(Compte *user) {
 	return step;
 }
 
-int SQL_creation_compte(Compte *user, char *mot_de_passe) {
+
+int SQL_insertion_compte(Compte *user) {
 	char *sql_insert = "INSERT INTO Comptes(Nom, Prenom, Mail, Admin) VALUES(@Nom, @Prenom, @Mail, @Admin);";
 
 	// Prepare the query
@@ -431,11 +443,17 @@ int SQL_creation_compte(Compte *user, char *mot_de_passe) {
 	rc = SQL_Compte_recherche(user);
 	debug("Got id_user %d\n", user->id_user);
 
+	return rc;
+}
+
+int SQL_creation_compte(Compte *user, char *mot_de_passe) {
+	int rc = SQL_insertion_compte(user);
+
 	// Make the id_user go from int to char (for the sqlite3_user_add function)
 	char *id_user = malloc(sizeof(char) * 10);
 	sprintf(id_user, "%d", user->id_user);
 
-	//rc = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), user->admin);
+	rc = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), user->admin);
 	
 	free(id_user);
 	return rc;
@@ -449,7 +467,7 @@ int SQL_connexion(Compte *user, char *mot_de_passe) {
 	char *id_user = malloc(sizeof(char) * 10);
 	sprintf(id_user, "%d", user->id_user);
 
-	//rc = sqlite3_user_authenticate(db, id_user, mot_de_passe, strlen(mot_de_passe));
+	rc = sqlite3_user_authenticate(db, id_user, mot_de_passe, strlen(mot_de_passe));
 	
 	free(id_user);
 	return rc;
@@ -460,8 +478,7 @@ int SQL_changement_mdp(Compte *user, char *mot_de_passe) {
 	char *id_user = malloc(sizeof(char) * 10);
 	sprintf(id_user, "%d", user->id_user);
 
-	int rc = SQLITE_DONE;
-	//int rc = sqlite3_user_change(db, id_user, mot_de_passe, strlen(mot_de_passe), user->admin);
+	int rc = sqlite3_user_change(db, id_user, mot_de_passe, strlen(mot_de_passe), user->admin);
 	
 	free(id_user);
 	return rc;
@@ -495,7 +512,10 @@ int SQL_changement_mail(Compte *user, char *new_mail) {
 }
 
 int SQL_suppression_compte(Compte *user) {
-	int rc = SQLITE_DONE;
-	//int rc = sqlite3_user_delete(db, user->id_user);
+	// Make the id_user go from int to char (for the sqlite3_user_delete function)
+	char *id_user = malloc(sizeof(char) * 10);
+	sprintf(id_user, "%d", user->id_user);
+	int rc = sqlite3_user_delete(db, id_user);
+	free(id_user);
 	return rc;
 }

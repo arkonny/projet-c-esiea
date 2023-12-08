@@ -5,13 +5,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Saisie d'une chaîne de caractères
+// Retourne la chaîne saisie
+char *saisie_chaine();
 
-int dispo(char *s);
-void emprunt(Livre l);
-void retour(Livre l);
-int list_d();
-void list_e();
-void save();
-int callback(void *NotUsed, int argc, char **argv, char **azColName);
+// Connexion de l'utilisateur
+// Demande le mail
+// Si pas de compte correspondant dans la base, inscription
+// (l'inscription authentifie automatiquement l'utilisateur)
+// Sinon, connexion
+user_connexion(Compte *user);
+
+// Inscription d'un utilisateur (pas forcément currentUser)
+// Demande nom, prénom, mail, mot de passe
+// Propose admin si currentUser est admin
+user_inscription(Compte *user);
+
+// Affiche les informations d'un utilisateur
+// Utilisateur courant par défaut
+// Recherche utilisateur si currentUser est admin
+user_afficher();
 
 #endif

@@ -40,7 +40,7 @@ DEBOPTS ?= -DDEBUG
 COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 -DSQLITE_USER_AUTHENTICATION $(INCLUDEOPTS)
 
 # liste des executables
-EXECUTABLES = Test_db_functions
+EXECUTABLES = Main Test_db_functions
 
 
 #############################################################################
@@ -101,7 +101,14 @@ Test%.o : Test%.c db_functions.h structs.h debug.h
 	@echo "Compilation du module "$@
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
-		
+
+Main.o : Main.c db_functions.h structs.h debug.h
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module "$@
+	@echo "---------------------------------------------"
+	$(CC) -c $(COMPILOPTS) $<
+
 ########################################################
 # regles explicites de creation des executables
 
@@ -112,6 +119,12 @@ Test% : Test%.o db_functions.o debug.o structs.o sqlite3.o
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -g -o $@
 
+Main : Main.o db_functions.o debug.o structs.o sqlite3.o
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Creation de l'executable "$@
+	@echo "---------------------------------------------"
+	$(CC) $^ $(LDOPTS) -g -o $@
 
 # regle pour "nettoyer" le r�pertoire
 clean:
