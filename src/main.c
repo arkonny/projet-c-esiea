@@ -58,10 +58,10 @@ int main(int argc, char **argv) {
 	user_connexion(currentUser);
 
 	// Boucle principale
-	int choix = 0;
-	while (choix != 8) {
-		affichage_menu_principal();
-		choix = selection(8);
+	if (currentUser->admin) {
+		menu_principal_admin();
+	} else {
+		menu_principal();
 	}
 	
 	// Déconnexion de l'utilisateur

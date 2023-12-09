@@ -7,6 +7,11 @@ int selection(int nbChoix) {
 	printf("Votre choix : ");
 	scanf("%d", &choix);
 	while(choix < 1 || choix > nbChoix) {
+		// Clear stdin
+		int c;
+		while ((c = getchar()) != '\n' && c != EOF) { }
+		choix = 0;
+
 		printf("Choix invalide\n");
 		printf("Un nombre entre 1 et %d est attendu\n", nbChoix);
 		printf("Votre choix : ");
@@ -16,15 +21,196 @@ int selection(int nbChoix) {
 }
 
 // Menu principal
-int affichage_menu_principal() {
-	char *menu = 
+void affichage_menu_principal() {
+	char *menu = "\n"
 		"=====================\n"
 		"   Menu principal\n"
-		"=====================\n\n"
-		"[1]. Gestion des clients\n"
-		"[2]. Gestion des comptes\n"
-		"[3]. Gestion des opérations\n"
+		"=====================\n"
+		"[1]. Livres\n"
+		"[2]. Compte\n"
+		"[3]. Quitter\n";
+	printf("%s", menu);
+}
+
+void menu_principal() {
+	int choix = 0;
+	while(choix != 3) {
+		affichage_menu_principal();
+		choix = selection(3);
+		switch(choix) {
+			case 1:
+				menu_livres();
+				break;
+			case 2:
+				menu_compte();
+				break;
+			case 3:
+				break;
+			default:
+				printf("Erreur\n");
+				break;
+		}
+	}
+}
+
+void affichage_menu_principal_admin() {
+	char *menu = "\n"
+		"=====================\n"
+		"   Menu principal\n"
+		"=====================\n"
+		"[1]. Livres\n"
+		"[2]. Compte\n"
+		"[3]. Administration\n"
 		"[4]. Quitter\n";
 	printf("%s", menu);
-	return 0;
+}
+
+void menu_principal_admin() {
+	int choix = 0;
+	while(choix != 4) {
+		affichage_menu_principal_admin();
+		choix = selection(4);
+		switch(choix) {
+			case 1:
+				menu_livres();
+				break;
+			case 2:
+				menu_compte();
+				break;
+			case 3:
+				menu_administration();
+				break;
+			case 4:
+				break;
+			default:
+				printf("Erreur\n");
+				break;
+		}
+	}
+}
+
+
+// Menu des livres
+void affichage_menu_livres() {
+	char *menu = "\n"
+		"=============\n"
+		"   Livres\n"
+		"=============\n"
+		"[1]. Rechercher un livre\n"
+		"[2]. Emprunter un livre\n"
+		"[3]. Retourner un livre\n"
+		"[4]. Livres empruntés\n"
+		"[5]. Retour\n";
+	printf("%s", menu);
+}
+
+void menu_livres() {
+	int choix = 0;
+	while(choix != 5) {
+		affichage_menu_livres();
+		choix = selection(5);
+		switch(choix) {
+			case 1:
+				printf("recherchelivre\n");
+				break;
+			case 2:
+				printf("emprunterlivre\n");
+				break;
+			case 3:
+				printf("retournerlivre\n");
+				break;
+			case 4:
+				printf("livresempruntes\n");
+				break;
+			case 5:
+				break;
+			default:
+				printf("Erreur\n");
+				break;
+		}
+	}
+}
+
+
+// Menu du compte
+void affichage_menu_compte() {
+	char *menu = "\n"
+		"==============\n"
+		"   Compte\n"
+		"==============\n"
+		"[1]. Modifier le mot de passe\n"
+		"[2]. Supprimer le compte\n"
+		"[3]. Retour\n";
+	printf("%s", menu);
+}
+
+void menu_compte() {
+	int choix = 0;
+	while(choix != 3) {
+		affichage_menu_compte();
+		choix = selection(3);
+		switch(choix) {
+			case 1:
+				printf("modifiermdp\n");
+				break;
+			case 2:
+				printf("supprimercompte\n");
+				break;
+			case 3:
+				break;
+			default:
+				printf("Erreur\n");
+				break;
+		}
+	}
+}
+
+
+// Menu de l'administration
+void affichage_menu_administration() {
+	char *menu = "\n"
+		"====================\n"
+		"   Administration\n"
+		"====================\n"
+		"[1]. Ajouter un livre\n"
+		"[2]. Supprimer un livre\n"
+		"[3]. Rechercher un compte\n"
+		"[4]. Ajouter un compte\n"
+		"[5]. Supprimer un compte\n"
+		"[6]. Modifier un compte\n"
+		"[7]. Retour\n";
+	printf("%s", menu);
+}
+
+void menu_administration() {
+	int choix = 0;
+	while(choix != 7) {
+		affichage_menu_administration();
+		choix = selection(7);
+		switch(choix) {
+			case 1:
+				printf("ajouterlivre\n");
+				break;
+			case 2:
+				printf("supprimerlivre\n");
+				break;
+			case 3:
+				printf("recherchercompte\n");
+				break;
+			case 4:
+				printf("ajoutercompte\n");
+				break;
+			case 5:
+				printf("supprimercompte\n");
+				break;
+			case 6:
+				printf("modifiercompte\n");
+				break;
+			case 7:
+				break;
+			default:
+				printf("Erreur\n");
+				break;
+		}
+	}
 }
