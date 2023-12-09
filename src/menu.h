@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "debug.h"
+#include "menu_fonctions.h"
 
 // Saisie d'un entier
 // pour le choix d'un menu

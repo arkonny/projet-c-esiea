@@ -47,16 +47,8 @@ int db_stmt_init(sqlite3_stmt *stmt, char *sql_request) {
 		debug("stmt == NULL\n");
 		return sqlite3_prepare_v2(db, sql_request, -1, &stmt, 0);
 	}
-	return sqlite3_reset(stmt);
-}
-
-int db_stmt_finalize(sqlite3_stmt *stmt) {
-	//debug("Finalizing statement\n");
-	if (stmt != NULL) {
-		debug("stmt != NULL\n");
-		return sqlite3_finalize(stmt);
-	}
-	return 0;
+	sqlite3_reset(stmt);
+	return sqlite3_clear_bindings(stmt);
 }
 */
 
@@ -448,12 +440,11 @@ int SQL_creation_compte(Compte *user, char *mot_de_passe) {
 	int rc = SQL_insertion_compte(user);
 
 	// Make the id_user go from int to char (for the sqlite3_user_add function)
-	char *id_user = malloc(sizeof(char) * 10);
+	char id_user[10];
 	sprintf(id_user, "%d", user->id_user);
 
 	rc = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), user->admin);
 	
-	free(id_user);
 	return rc;
 }
 
@@ -461,23 +452,21 @@ int SQL_connexion(Compte *user, char *mot_de_passe) {
 	int rc;
 
 	// Make the id_user go from int to char (for the sqlite3_user_authenticate function)
-	char *id_user = malloc(sizeof(char) * 10);
+	char id_user[10];
 	sprintf(id_user, "%d", user->id_user);
 
 	rc = sqlite3_user_authenticate(db, id_user, mot_de_passe, strlen(mot_de_passe));
 	
-	free(id_user);
 	return rc;
 }
 
 int SQL_changement_mdp(Compte *user, char *mot_de_passe) {
 	// Make the id_user go from int to char (for the sqlite3_user_change function)
-	char *id_user = malloc(sizeof(char) * 10);
+	char id_user[10];
 	sprintf(id_user, "%d", user->id_user);
 
 	int rc = sqlite3_user_change(db, id_user, mot_de_passe, strlen(mot_de_passe), user->admin);
 	
-	free(id_user);
 	return rc;
 }
 
@@ -510,9 +499,8 @@ int SQL_changement_mail(Compte *user, char *new_mail) {
 
 int SQL_suppression_compte(Compte *user) {
 	// Make the id_user go from int to char (for the sqlite3_user_delete function)
-	char *id_user = malloc(sizeof(char) * 10);
+	char id_user[10];
 	sprintf(id_user, "%d", user->id_user);
 	int rc = sqlite3_user_delete(db, id_user);
-	free(id_user);
 	return rc;
 }

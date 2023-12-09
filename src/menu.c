@@ -17,6 +17,9 @@ int selection(int nbChoix) {
 		printf("Votre choix : ");
 		scanf("%d", &choix);
 	}
+	// Clear stdin
+	int c;
+	while ((c = getchar()) != '\n' && c != EOF) { }
 	return choix;
 }
 
@@ -100,15 +103,16 @@ void affichage_menu_livres() {
 		"[2]. Emprunter un livre\n"
 		"[3]. Retourner un livre\n"
 		"[4]. Livres empruntés\n"
-		"[5]. Retour\n";
+		"[5]. Livres disponibles\n"
+		"[6]. Retour\n";
 	printf("%s", menu);
 }
 
 void menu_livres() {
 	int choix = 0;
-	while(choix != 5) {
+	while(choix != 6) {
 		affichage_menu_livres();
-		choix = selection(5);
+		choix = selection(6);
 		switch(choix) {
 			case 1:
 				printf("recherchelivre\n");
@@ -123,6 +127,9 @@ void menu_livres() {
 				printf("livresempruntes\n");
 				break;
 			case 5:
+				printf("livresdisponibles\n");
+				break;
+			case 6:
 				break;
 			default:
 				printf("Erreur\n");
@@ -138,25 +145,29 @@ void affichage_menu_compte() {
 		"==============\n"
 		"   Compte\n"
 		"==============\n"
-		"[1]. Modifier le mot de passe\n"
+		"[1]. Modifier le compte\n"
 		"[2]. Supprimer le compte\n"
-		"[3]. Retour\n";
+		"[3]. Afficher les informations du compte\n"
+		"[4]. Retour\n";
 	printf("%s", menu);
 }
 
 void menu_compte() {
 	int choix = 0;
-	while(choix != 3) {
+	while(choix != 4) {
 		affichage_menu_compte();
-		choix = selection(3);
+		choix = selection(4);
 		switch(choix) {
 			case 1:
-				printf("modifiermdp\n");
+				//modifier_compte();
 				break;
 			case 2:
-				printf("supprimercompte\n");
+				//supprimer_compte();
 				break;
 			case 3:
+				//afficher_compte();
+				break;
+			case 4:
 				break;
 			default:
 				printf("Erreur\n");
@@ -189,22 +200,22 @@ void menu_administration() {
 		choix = selection(7);
 		switch(choix) {
 			case 1:
-				printf("ajouterlivre\n");
+				ajouter_livre();
 				break;
 			case 2:
-				printf("supprimerlivre\n");
+				supprimer_livre();
 				break;
 			case 3:
-				printf("recherchercompte\n");
+				rechercher_compte();
 				break;
 			case 4:
-				printf("ajoutercompte\n");
+				ajouter_compte();
 				break;
 			case 5:
-				printf("supprimercompte\n");
+				supprimer_compte_admin();
 				break;
 			case 6:
-				printf("modifiercompte\n");
+				modifier_compte_admin();
 				break;
 			case 7:
 				break;

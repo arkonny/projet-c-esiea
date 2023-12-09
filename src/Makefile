@@ -56,37 +56,16 @@ all : $(EXECUTABLES)
 #  remplace les regles de compilation separee de la forme
 #	module.o : module.c module.h
 #		$(CC) -c $(COMPILOPTS) module.c
-#%.o : %.c %.h
-#	@echo ""
-#	@echo "---------------------------------------------"
-#	@echo "Compilation du module "$*
-#	@echo "---------------------------------------------"
-#	$(CC) -c $(COMPILOPTS) $<
+%.o : %.c %.h
+	@echo ""
+	@echo "---------------------------------------------"
+	@echo "Compilation du module "$*
+	@echo "---------------------------------------------"
+	$(CC) -c $(COMPILOPTS) $<
 
 ########################################################
 # regles explicites de compilation separee de modules
 # n'ayant pas de fichier .h ET/OU dependant d'autres modules
-
-sqlite3.o : sqlite3.c sqlite3.h
-	@echo ""
-	@echo "---------------------------------------------"
-	@echo "Compilation du module sqlite3"
-	@echo "---------------------------------------------"
-	$(CC) -c $(COMPILOPTS) $<
-
-debug.o : debug.c debug.h
-	@echo ""
-	@echo "---------------------------------------------"
-	@echo "Compilation du module debug"
-	@echo "---------------------------------------------"
-	$(CC) -c $(COMPILOPTS) $<
-
-structs.o : structs.c structs.h
-	@echo ""
-	@echo "---------------------------------------------"
-	@echo "Compilation du module structs"
-	@echo "---------------------------------------------"
-	$(CC) -c $(COMPILOPTS) $<
 
 db_functions.o : db_functions.c db_functions.h structs.h debug.h sqlite3userauth.h
 	@echo ""
@@ -95,17 +74,10 @@ db_functions.o : db_functions.c db_functions.h structs.h debug.h sqlite3userauth
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-menu.o : menu.c menu.h
+menu.o : menu.c menu.h menu_fonctions.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module menu"
-	@echo "---------------------------------------------"
-	$(CC) -c $(COMPILOPTS) $<
-
-fonctions.o : fonctions.c fonctions.h
-	@echo ""
-	@echo "---------------------------------------------"
-	@echo "Compilation du module fonctions"
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
@@ -133,7 +105,7 @@ Test% : Test%.o db_functions.o debug.o structs.o sqlite3.o
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -g -o $@
 
-Main : Main.o db_functions.o debug.o structs.o sqlite3.o menu.o fonctions.o
+Main : Main.o db_functions.o debug.o structs.o sqlite3.o menu.o fonctions.o menu_fonctions.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@

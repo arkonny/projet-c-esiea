@@ -3,9 +3,10 @@
 // Saisie d'une chaîne de caractères
 // Retourne la chaîne saisie
 char *saisie_chaine(char *entree) {
-		char *chaine = malloc(sizeof(char) * 100);
+		char *chaine = malloc(101);
 		printf("%s : ", entree);
-		scanf("%s", chaine);
+		fgets(chaine, 100, stdin);
+		chaine[strlen(chaine)-1] = '\0';
 		return chaine;
 }
 
@@ -22,18 +23,13 @@ void clear_chaine(char *chaine) {
 // Faite deux fois pour confirmation
 // Retourne la chaîne saisie
 char *saisie_chaine_double(char *entree) {
-	char *chaine, *chaine2;
-	chaine = saisie_chaine(entree);
-	chaine2 = saisie_chaine("Confirmation");
-
+	char *chaine = saisie_chaine(entree);
+	char *chaine2 = saisie_chaine("Confirmation");
 	while (strcmp(chaine, chaine2) != 0) {
 		printf("Les entrées ne correspondent pas.\n");
 		chaine = saisie_chaine(entree);
 		chaine2 = saisie_chaine("Confirmation");
 	}
-
-	// Overwrite chaine2
-	clear_chaine(chaine2);
 	return chaine;
 }
 
@@ -45,9 +41,8 @@ char *saisie_chaine_double(char *entree) {
 // Sinon, connexion
 int user_connexion(Compte *user) {
 	char *mail = saisie_chaine("Entrez votre mail");
-
 	init_Compte(user, 0, "", "", mail, 0);
-
+	free(mail);
 	int res = SQL_Compte_recherche(user);
 	debug("Recherche de compte : %d\n", res);
 	if (res != 100) {
@@ -88,7 +83,7 @@ int user_inscription(Compte *user) {
 		if (strcmp(isAdmin, "O") == 0) {
 			admin = 1;
 		} 
-		clear_chaine(isAdmin);
+		free(isAdmin);
 	} 
 
 	init_Compte(user, 0, nom, prenom, user->mail, admin);
@@ -101,8 +96,8 @@ int user_inscription(Compte *user) {
 		res = SQL_connexion(user, mdp);
 	}
 
-	clear_chaine(nom);
-	clear_chaine(prenom);
+	free(nom);
+	free(prenom);
 	clear_chaine(mdp);
 
 	return res;
