@@ -157,7 +157,7 @@ int SQL_recherche(Livre *livre, listeLivre *liste) {
 		// Add the Livre object to the listLivre
 		ajouter_tete_listeLivre(liste, livre);
 		debug("Got book %d:\n",liste->taille);
-		print_Livre(liste->tete->livre);
+		debug_Livre(liste->tete->livre);
 		debug("\n");
 
 		// Get the next result
@@ -209,7 +209,7 @@ int SQL_livres_empruntes(Compte *user, listeLivre *liste) {
 		// Add the Livre object to the listLivre
 		ajouter_tete_listeLivre(liste, livre);
 		debug("Got book %d:\n",liste->taille);
-		print_Livre(liste->tete->livre);
+		debug_Livre(liste->tete->livre);
 		debug("\n");
 
 		// Get the next result

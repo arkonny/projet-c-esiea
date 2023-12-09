@@ -14,10 +14,10 @@ int main() {
 	printf("\n=== Initialisation of Livre objects ===\n");
 	Livre *book = malloc(sizeof(Livre));
 	init_Livre(book, "xxxx","Book Title", "Author","Genre (mais en anglais)",1,""); 
-	print_Livre(book);
+	debug_Livre(book);
 	Livre *book2 = malloc(sizeof(Livre));
 	init_Livre(book2, "xabx","Titre du livre", "Auteur","Genre",2,""); 
-	print_Livre(book2);
+	debug_Livre(book2);
 
 	char *date = "2020-01-01";
 	strcpy(book->date_emprunt, date);
@@ -68,7 +68,7 @@ int main() {
 	init_Compte(user_result0, 0, "", "", "lr@gmail.com", 0);
 	printf("\n=== Testing SQL_Compte_recherche===\n");
 	res = SQL_Compte_recherche(user_result0);
-	print_Compte(user_result0);
+	debug_Compte(user_result0);
 	printf("SQL_Compte_recherche(user_result) returned %d\n\n", res);
 	if (res != SQLITE_DONE) {
 		return err();
@@ -78,7 +78,7 @@ int main() {
 	///*
 	printf("\n=== Testing SQL_creation_compte===\n");
 	res = SQL_creation_compte(user, "password");
-	print_Compte(user);
+	debug_Compte(user);
 	printf("SQL_creation_compte(user2) returned %d\n\n", res);
 	if (res != SQLITE_DONE) {
 		return err();
@@ -90,7 +90,7 @@ int main() {
 	init_Compte(user_result, 0, "", "", "lucienrenardraguenaud@mail.com", 0);
 	printf("\n=== Testing SQL_Compte_recherche===\n");
 	res = SQL_Compte_recherche(user_result);
-	print_Compte(user_result);
+	debug_Compte(user_result);
 	printf("SQL_Compte_recherche(user_result) returned %d\n\n", res);
 	if (res != SQLITE_DONE) {
 		return err();
@@ -117,13 +117,13 @@ int main() {
 	
 	//*
 	printf("\n=== Testing SQL_changement_mail===\n");
-	print_Compte(user);
+	debug_Compte(user);
 	res = SQL_changement_mail(user, "new_mail");
-	print_Compte(user);
+	debug_Compte(user);
 
 	init_Compte(user_result, 0, "", "", "new_mail", 0);
 	SQL_Compte_recherche(user_result);
-	print_Compte(user_result);
+	debug_Compte(user_result);
 
 	printf("SQL_changement_mail(user) returned %d\n\n", res);
 	if (res != SQLITE_DONE) {
@@ -188,7 +188,7 @@ int main() {
 	/*
 	printf("\n=== Testing SQL_recherche ===\n");
 	debug("Recherhe livre : ");
-	print_Livre(book2);
+	debug_Livre(book2);
 	res = SQL_recherche(book2, result);
 	printf("Il y a %d livre(s) correspondand(s) :\n",result->taille);
 	celluleLivre* cel = result->tete;

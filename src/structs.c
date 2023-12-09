@@ -17,6 +17,10 @@ int init_Livre(Livre *livre, char *isbn, char *titre, char *auteur, char *genre,
 	return 0;
 }
 
+void print_Livre(Livre *livre) {
+	printf("%-10.10s %-10.10s %-10.10s %-10.10s %d %-10.10s\n", livre->isbn, livre->titre, livre->auteur, livre->genre, livre->id_user, livre->date_emprunt);
+}
+
 int init_Compte(Compte *compte, int id_user, char *nom, char *prenom, char *mail, int admin) {
 	if (nom == NULL) nom = "";
 	if (prenom == NULL) prenom = "";
@@ -28,6 +32,10 @@ int init_Compte(Compte *compte, int id_user, char *nom, char *prenom, char *mail
 	strncpy(compte->mail,mail,100);
 	compte->admin = admin;
 	return 0;
+}
+
+void print_Compte(Compte *compte) {
+	printf("%d  |%-10.10s|%-10.10s|%-10.10s|%d\n", compte->id_user, compte->nom, compte->prenom, compte->mail, compte->admin);
 }
 
 void init_listeLivre_vide(listeLivre* L) {
@@ -62,6 +70,15 @@ int ajouter_tete_listeLivre(listeLivre* L, Livre *s) { /* retourne 0 si OK, 1 si
 	return 1;
 }
 
+void afficher_listeLivre(listeLivre *L) {
+	printf("ISBN\t\tTitre\t\tAuteur\t\tGenre\t\tEmprunté\tDate d'emprunt\n");
+	celluleLivre *cel = L->tete;
+	while (cel != NULL) {
+		print_Livre(cel->livre);
+		cel = cel->suivant;
+	}
+}
+
 void init_listeCompte_vide(listeCompte* L) {
 	L->tete = NULL;
 	L->taille = 0;
@@ -89,4 +106,13 @@ int ajouter_tete_listeCompte(listeCompte* L, Compte s) { /* retourne 0 si OK, 1 
 		return 0;
 	}
 	return 1;
+}
+
+void afficher_listeCompte(listeCompte *L) {
+	printf("ID\t\tNom\t\tPrénom\t\tMail\t\tAdmin\n");
+	celluleCompte *cel = L->tete;
+	while (cel != NULL) {
+		print_Compte(&cel->compte);
+		cel = cel->suivant;
+	}
 }

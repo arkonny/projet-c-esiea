@@ -11,7 +11,7 @@
 #endif
 
 int err();
-void print_Livre(Livre *livre);
-void print_Compte(Compte *compte);
+void debug_Livre(Livre *livre);
+void debug_Compte(Compte *compte);
 
 #endif 

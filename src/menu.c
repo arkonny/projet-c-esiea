@@ -115,19 +115,19 @@ void menu_livres() {
 		choix = selection(6);
 		switch(choix) {
 			case 1:
-				printf("recherchelivre\n");
+				rechercher_livre();
 				break;
 			case 2:
-				printf("emprunterlivre\n");
+				emprunter_livre();
 				break;
 			case 3:
-				printf("retournerlivre\n");
+				retourner_livre();
 				break;
 			case 4:
-				printf("livresempruntes\n");
+				livres_empruntes();
 				break;
 			case 5:
-				printf("livresdisponibles\n");
+				livres_disponibles();
 				break;
 			case 6:
 				break;
@@ -159,13 +159,13 @@ void menu_compte() {
 		choix = selection(4);
 		switch(choix) {
 			case 1:
-				//modifier_compte();
+				modifier_compte();
 				break;
 			case 2:
-				//supprimer_compte();
+				supprimer_compte();
 				break;
 			case 3:
-				//afficher_compte();
+				afficher_compte();
 				break;
 			case 4:
 				break;
