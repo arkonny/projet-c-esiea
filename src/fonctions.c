@@ -54,13 +54,13 @@ int saisie_binaire(char *entree) {
 }
 
 char *hash(char *mdp, int salt) {
-	char *charsalt = malloc(2);
-	sprintf(charsalt, "$%d$", salt);
-	char *hash = crypt(mdp, "$6$");
+	char *salt_str = malloc(10);
+	sprintf(salt_str, "$1$%d$", salt);
+	char *hash = crypt(mdp, salt_str);
 	debug("Mdp : %s\n", mdp);
-	debug("Salt : %s\n", charsalt);
+	debug("Salt : %s\n", salt_str);
 	debug("Hash : %s\n", hash);
-	//free(charsalt);
+	free(salt_str);
 	return hash;
 }
 
