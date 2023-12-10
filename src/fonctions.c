@@ -53,13 +53,25 @@ int saisie_binaire(char *entree) {
 	}
 }
 
+char *hash(char *mdp, int salt) {
+	char *charsalt = malloc(2);
+	sprintf(charsalt, "$%d$", salt);
+	char *hash = crypt(mdp, "$6$");
+	debug("Mdp : %s\n", mdp);
+	debug("Salt : %s\n", charsalt);
+	debug("Hash : %s\n", hash);
+	//free(charsalt);
+	return hash;
+}
+
+
 // Connexion de l'utilisateur
 // Demande le mail
 // Si pas de compte correspondant dans la base, inscription
 // Sinon, connexion
 int user_connexion(Compte *user) {
 	char *mail = saisie_chaine("Entrez votre mail");
-	init_Compte(user, 0, "", "", mail, 0);
+	init_Compte(user, 0, "", "", mail, "", 0);
 	free(mail);
 	int res = SQL_Compte_recherche(user);
 	debug_Compte(user);
@@ -68,24 +80,30 @@ int user_connexion(Compte *user) {
 		printf("Compte introuvable.\n");
 		if (saisie_binaire("Inscription ? (O/N)")) {
 			res = user_inscription(user);
-			res = user_connexion(user);
+			if (res == -1) {
+				printf("Inscription annulée.\n");
+				return -1;
+			} else {
+				res = user_connexion(user);
+			}
 		} else {
 			printf("Connexion annulée.\n");
 			return -1;
 		}
 	} else {
 		char *mdp = saisie_chaine("Mot de passe");
-		res = SQL_connexion(user, mdp);
-		debug("Connexion : %d\n", res);
+		char *mdp_hash = hash(mdp, user->id_user);
+		res = strcmp(mdp_hash, user->hash);
 		while(res != 0) {
 			printf("Mot de passe incorrect.\n");
 			if (!saisie_binaire("Réessayer ? (O/N)")) {
 				printf("Connexion annulée.\n");
-				clear_chaine(mdp);
 				return -1;
 			}
+			clear_chaine(mdp);
 			mdp = saisie_chaine("Mot de passe");
-			res = SQL_connexion(user, mdp);
+			mdp_hash = hash(mdp, user->id_user);
+			res = strcmp(mdp_hash, user->hash);
 		}
 		clear_chaine(mdp);
 		printf("Connexion réussie.\n");
@@ -94,7 +112,7 @@ int user_connexion(Compte *user) {
 }
 
 int user_deconnexion(Compte *user) {
-	init_Compte(user, 0, "", "", "", 0);
+	init_Compte(user, 0, "", "", "", "", 0);
 	debug("Déconnexion réussie.\n");
 	return 0;
 }
@@ -104,40 +122,40 @@ int user_deconnexion(Compte *user) {
 // Demande nom, prénom, mail, mot de passe
 // Propose admin si currentUser est admin
 int user_inscription(Compte *user) {
-	char *nom = saisie_chaine("Nom");
-	char *prenom = saisie_chaine("Prénom");
-	char *mail;
-	if (user->mail == NULL || strcmp(user->mail, "") == 0) {
-		mail = saisie_chaine_double("Adresse mail");
-	} else {
-		mail = user->mail;
-	}
-	char *mdp = saisie_chaine_double("Mot de passe");
-
 	int admin = 0;
 	if(currentUser->admin == 1) {
 		if (saisie_binaire("Administrateur ? (O/N)")) {
 			admin = 1;
 		} 
 	} 
+	char *nom = saisie_chaine("Nom");
+	char *prenom = saisie_chaine("Prénom");
+	if (user->mail == NULL || strcmp(user->mail, "") == 0) {
+		char *mail = saisie_chaine_double("Adresse mail");
+		init_Compte(user, 0, nom, prenom, mail, "", admin);
+		free(mail);
+	} else {
+		init_Compte(user, 0, nom, prenom, user->mail, "", admin);
+	}
+	char *mdp = saisie_chaine_double("Mot de passe");
 
-	init_Compte(user, 0, nom, prenom, mail, admin);
 	int res = SQL_Compte_recherche(user);
 	debug("Recherche de compte : %d\n", res);
 	debug_Compte(user);
 	if (res) {
 		printf("Compte déjà existant.\n");
+		res = -1;
 	} else {
-		res = SQL_creation_compte(user, mdp);
-		debug("Création de compte : %d\n", res);
+		res = SQL_insertion_compte(user);
+		char *mdp_hash = hash(mdp, user->id_user);
+		res = SQL_changement_mdp(user, mdp_hash);
 		debug_Compte(user);
-		debug("Mot de passe : %s\n", mdp);
-		printf("Inscription réussie.\n");
 	}
 
 	free(nom);
 	free(prenom);
 	clear_chaine(mdp);
+	debug("user_inscription : %d\n", res);
 	return res;
 }
 

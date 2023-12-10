@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS Comptes;
-CREATE TABLE Comptes(Id_User INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Prenom TEXT,Mail TEXT, Admin INTEGER);
-INSERT INTO Comptes(Nom,Prenom,Mail, Admin) VALUES ('Uriel','Anthony','ua@gmail.com', 1);
-INSERT INTO Comptes(Nom,Prenom,Mail, Admin) VALUES ('Renard-Raguenaud','Lucien','lr@gmail.com', 0);
+CREATE TABLE Comptes(Id_User INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Prenom TEXT, Mail TEXT, Hash TEXT, Admin INTEGER);
+INSERT INTO Comptes(Nom, Prenom, Mail, Hash, Admin) VALUES ('Uriel','Anthony','ua@gmail.com', '', 1);
+INSERT INTO Comptes(Nom, Prenom, Mail, Hash, Admin) VALUES ('Renard-Raguenaud','Lucien','lr@gmail.com', '', 0);
 DROP TABLE IF EXISTS Livres;
 CREATE TABLE Livres(ISBN TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT, Id_User INTEGER, Date_Emprunt TEXT);
 INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('1xxx', 'Le Seigneur des Anneaux', 'J.R.R. Tolkien', 'Fantasy', 1);

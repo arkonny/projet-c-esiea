@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <crypt.h>
 #include "structs.h"
 #include "debug.h"
 #include "db_functions.h"
@@ -22,6 +23,10 @@ void saisie_entree();
 
 // Saisie binaire (oui/non)
 int saisie_binaire();
+
+// Hashage d'une chaîne de caractères
+// Retourne le hash
+char *hash(char *mdp, int salt);
 
 // Connexion de l'utilisateur
 // Demande le mail

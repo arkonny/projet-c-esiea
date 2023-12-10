@@ -29,20 +29,22 @@ int main(int argc, char **argv) {
 	if (res == 1) {
 		debug("La base de données n'était pas initialisée\n");
 		// Création du compte utilisateur administateur
-		char *id_user = "1";
 		printf("Entrez les informations du compte administrateur\n");
 		char *nom = saisie_chaine("Nom");
 		char *prenom = saisie_chaine("Prénom");
 		char *mail = saisie_chaine_double("Adresse mail");
-		char *mot_de_passe = saisie_chaine_double("Mot de passe");
-		res = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
-		debug("sqlite3_user_add admin = %d\n", res);
+		char *mdp = saisie_chaine_double("Mot de passe");
+		char *mdp_hash = hash(mdp, 1);
 
 		// Initialisation de la base de données
 		res = SQL_init();
-		init_Compte(currentUser, 1, nom, prenom, mail, 1);
+		init_Compte(currentUser, 1, nom, prenom, mail, mdp_hash, 1);
 		SQL_insertion_compte(currentUser);
 		printf("Compte administrateur créé\n");
+		free(nom);
+		free(prenom);
+		free(mail);
+		free(mdp);
 	}
 
 

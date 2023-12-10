@@ -28,7 +28,7 @@ INCDIR = .
 LIBDIR = .
 
 # options pour l'addition des liens
-LDOPTS = -lsqlite3 -L$(LIBDIR) -lm
+LDOPTS = -lsqlite3 -lcrypt -L$(LIBDIR) -lm
 
 # options pour la recherche des fichiers .o et .h
 INCLUDEOPTS = -I$(INCDIR)
@@ -37,10 +37,10 @@ INCLUDEOPTS = -I$(INCDIR)
 DEBOPTS ?= -DDEBUG
 
 # options de compilation
-COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 -DSQLITE_USER_AUTHENTICATION $(INCLUDEOPTS)
+COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 -lcrypt $(INCLUDEOPTS)
 
 # liste des executables
-EXECUTABLES = Main Test_db_functions
+EXECUTABLES = Main
 
 
 #############################################################################
@@ -67,7 +67,7 @@ all : $(EXECUTABLES)
 # regles explicites de compilation separee de modules
 # n'ayant pas de fichier .h ET/OU dependant d'autres modules
 
-db_functions.o : db_functions.c db_functions.h structs.h debug.h sqlite3userauth.h
+db_functions.o : db_functions.c db_functions.h structs.h debug.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module db_functions"
@@ -98,14 +98,14 @@ Main.o : Main.c db_functions.h structs.h debug.h menu.h fonctions.h
 ########################################################
 # regles explicites de creation des executables
 
-Test% : Test%.o db_functions.o debug.o structs.o sqlite3.o
+Test% : Test%.o db_functions.o debug.o structs.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -g -o $@
 
-Main : Main.o db_functions.o debug.o structs.o sqlite3.o menu.o fonctions.o menu_fonctions.o
+Main : Main.o db_functions.o debug.o structs.o menu.o fonctions.o menu_fonctions.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@

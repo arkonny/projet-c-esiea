@@ -65,7 +65,7 @@ int SQL_init() {
   char *sql_livres = "DROP TABLE IF EXISTS Livres;"
 										 "CREATE TABLE Livres(ISBN TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT, Id_User INT, Date_Emprunt TEXT);"
 										 "DROP TABLE IF EXISTS Comptes;"
-										 "CREATE TABLE Comptes(Id_User INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Prenom TEXT, Mail TEXT, Admin INTEGER);";
+										 "CREATE TABLE Comptes(Id_User INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Prenom TEXT, Mail TEXT, Hash TEXT, Admin INTEGER);";
                      
   int rc = sqlite3_exec(db, sql_livres, 0, 0, &err_msg);
   if (db_error_handler_err_msg(rc, err_msg, "SQL error: ")) {
@@ -392,17 +392,18 @@ int SQL_Compte_recherche(Compte *user) {
 	char *nom = (char *) sqlite3_column_text(compte_recherche_stmt, 1);
 	char *prenom = (char *) sqlite3_column_text(compte_recherche_stmt, 2);
 	char *mail = (char *) sqlite3_column_text(compte_recherche_stmt, 3);
-	int admin = sqlite3_column_int(compte_recherche_stmt, 4);
+	char *hash = (char *) sqlite3_column_text(compte_recherche_stmt, 4);
+	int admin = sqlite3_column_int(compte_recherche_stmt, 5);
 
 	// Copy the strings
-	init_Compte(user, id_user, nom, prenom, mail, admin);
+	init_Compte(user, id_user, nom, prenom, mail, hash, admin);
 
 	return 1;
 }
 
 
 int SQL_insertion_compte(Compte *user) {
-	char *sql_insert = "INSERT INTO Comptes(Nom, Prenom, Mail, Admin) VALUES(@Nom, @Prenom, @Mail, @Admin);";
+	char *sql_insert = "INSERT INTO Comptes(Nom, Prenom, Mail, Hash, Admin) VALUES(@Nom, @Prenom, @Mail, @Hash, @Admin);";
 
 	// Prepare the query
 	// int rc = db_stmt_init(creation_compte_stmt, sql_insert);
@@ -418,7 +419,8 @@ int SQL_insertion_compte(Compte *user) {
 		sqlite3_bind_text(creation_compte_stmt, 1, user->nom, -1, SQLITE_STATIC);
 		sqlite3_bind_text(creation_compte_stmt, 2, user->prenom, -1, SQLITE_STATIC);
 		sqlite3_bind_text(creation_compte_stmt, 3, user->mail, -1, SQLITE_STATIC);
-		sqlite3_bind_int(creation_compte_stmt, 4, user->admin);
+		sqlite3_bind_text(creation_compte_stmt, 4, user->hash, -1, SQLITE_STATIC);
+		sqlite3_bind_int(creation_compte_stmt, 5, user->admin);
 		debug("Inserted arguments\n");
 	}
 
@@ -431,45 +433,34 @@ int SQL_insertion_compte(Compte *user) {
 
 	// Get the id_user by searching the account
 	rc = SQL_Compte_recherche(user);
+	debug("SQL_Compte_recherche returned %d\n", rc);
 	debug("Got id_user %d\n", user->id_user);
 
 	return rc;
 }
 
-int SQL_creation_compte(Compte *user, char *mot_de_passe) {
-	int rc = SQL_insertion_compte(user);
+int SQL_changement_mdp(Compte *user, char *new_hash) {
+	char *sql_update = "UPDATE Comptes SET Hash = @Hash WHERE Mail = @Mail;";
 
-	// Make the id_user go from int to char (for the sqlite3_user_add function)
-	char id_user[10];
-	sprintf(id_user, "%d", user->id_user);
-
-	rc = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
-	
-	return rc;
-}
-
-int SQL_connexion(Compte *user, char *mot_de_passe) {
+	// Prepare the query
+	// int rc = db_stmt_init(changement_mail_stmt, sql_update);
 	int rc;
-
-	// Make the id_user go from int to char (for the sqlite3_user_authenticate function)
-	char id_user[10];
-	sprintf(id_user, "%d", user->id_user);
-	debug("id_user = %s\n", id_user);
-
-	rc = sqlite3_user_authenticate(db, id_user, mot_de_passe, strlen(mot_de_passe));
-	
+	if (changement_mail_stmt == NULL) {
+		rc = sqlite3_prepare_v2(db, sql_update, -1, &changement_mail_stmt, 0);
+	} else {
+		rc = sqlite3_reset(changement_mail_stmt);
+	}
+	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
+		// Bind the parameters
+		sqlite3_bind_text(changement_mail_stmt, 1, new_hash, -1, SQLITE_STATIC);
+		sqlite3_bind_text(changement_mail_stmt, 2, user->mail, -1, SQLITE_STATIC);
+		debug("Inserted arguments\n");
+	}
+	rc = sqlite3_step(changement_mail_stmt);
+	strncpy(user->hash, new_hash, 100);
 	return rc;
 }
 
-int SQL_changement_mdp(Compte *user, char *mot_de_passe) {
-	// Make the id_user go from int to char (for the sqlite3_user_change function)
-	char id_user[10];
-	sprintf(id_user, "%d", user->id_user);
-
-	int rc = sqlite3_user_change(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
-	
-	return rc;
-}
 
 int SQL_changement_mail(Compte *user, char *new_mail) {
 	char *sql_update = "UPDATE Comptes SET Mail = @NewMail WHERE Mail = @Mail;";
@@ -498,10 +489,25 @@ int SQL_changement_mail(Compte *user, char *new_mail) {
 	return rc;
 }
 
+
 int SQL_suppression_compte(Compte *user) {
-	// Make the id_user go from int to char (for the sqlite3_user_delete function)
-	char id_user[10];
-	sprintf(id_user, "%d", user->id_user);
-	int rc = sqlite3_user_delete(db, id_user);
+	char *sql_remove = "DELETE FROM Comptes WHERE Mail = @Mail;";
+
+	// Prepare the query
+	// int rc = db_stmt_init(creation_compte_stmt, sql_remove);
+	int rc;
+	if (creation_compte_stmt == NULL) {
+		rc = sqlite3_prepare_v2(db, sql_remove, -1, &creation_compte_stmt, 0);
+	} else {
+		rc = sqlite3_reset(creation_compte_stmt);
+	}
+
+	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
+		// Bind the parameters
+		sqlite3_bind_text(creation_compte_stmt, 1, user->mail, -1, SQLITE_STATIC);
+		debug("Inserted arguments\n");
+	}
+
+	rc = sqlite3_step(creation_compte_stmt);
 	return rc;
 }

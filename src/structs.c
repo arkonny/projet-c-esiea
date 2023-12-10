@@ -21,21 +21,23 @@ void print_Livre(Livre *livre) {
 	printf("%-10.10s %-10.10s %-10.10s %-10.10s %d %-10.10s\n", livre->isbn, livre->titre, livre->auteur, livre->genre, livre->id_user, livre->date_emprunt);
 }
 
-int init_Compte(Compte *compte, int id_user, char *nom, char *prenom, char *mail, int admin) {
+int init_Compte(Compte *compte, int id_user, char *nom, char *prenom, char *mail, char *hash, int admin) {
 	if (nom == NULL) nom = "";
 	if (prenom == NULL) prenom = "";
 	if (mail == NULL) mail = "";
+	if (hash == NULL) hash = "";
 
 	compte->id_user = id_user;
 	strncpy(compte->nom,nom,100);
 	strncpy(compte->prenom,prenom,100);
 	strncpy(compte->mail,mail,100);
+	strncpy(compte->hash,hash,100);
 	compte->admin = admin;
 	return 0;
 }
 
 void print_Compte(Compte *compte) {
-	printf("%d  |%-10.10s|%-10.10s|%-10.10s|%d\n", compte->id_user, compte->nom, compte->prenom, compte->mail, compte->admin);
+	printf("%d  |%-10.10s|%-10.10s|%-10.10s|%d", compte->id_user, compte->nom, compte->prenom, compte->mail, compte->admin);
 }
 
 void init_listeLivre_vide(listeLivre* L) {

@@ -23,10 +23,11 @@ typedef struct {
         char nom[101];
         char prenom[101];
         char mail[101];
+				char hash[101];
 				int admin;
 } Compte;
 
-int init_Compte(Compte *compte, int id_user, char *nom, char *prenom, char *mail, int admin);
+int init_Compte(Compte *compte, int id_user, char *nom, char *prenom, char *mail, char *hash, int admin);
 
 void print_Compte(Compte *compte);
 
