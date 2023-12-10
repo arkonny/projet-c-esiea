@@ -17,6 +17,12 @@ char *saisie_chaine(char *entree);
 // Retourne le mot de passe saisi
 char *saisie_chaine_double(char *entree);
 
+// Saisie de n'importe quelle touche pour continuer
+void saisie_entree();
+
+// Saisie binaire (oui/non)
+int saisie_binaire();
+
 // Connexion de l'utilisateur
 // Demande le mail
 // Si pas de compte correspondant dans la base, inscription

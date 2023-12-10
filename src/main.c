@@ -35,13 +35,14 @@ int main(int argc, char **argv) {
 		char *prenom = saisie_chaine("Prénom");
 		char *mail = saisie_chaine_double("Adresse mail");
 		char *mot_de_passe = saisie_chaine_double("Mot de passe");
-		sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
+		res = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
+		debug("sqlite3_user_add admin = %d\n", res);
 
 		// Initialisation de la base de données
 		res = SQL_init();
 		init_Compte(currentUser, 1, nom, prenom, mail, 1);
 		SQL_insertion_compte(currentUser);
-		debug("Compte administrateur créé\n");
+		printf("Compte administrateur créé\n");
 	}
 
 
@@ -55,7 +56,11 @@ int main(int argc, char **argv) {
 	************************************************/
 
 	// Connexion de l'utilisateur
-	user_connexion(currentUser);
+	res = user_connexion(currentUser);
+	if (res == -1) {
+		SQL_close();
+		return 0;
+	}
 
 	// Boucle principale
 	if (currentUser->admin) {

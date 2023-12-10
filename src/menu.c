@@ -116,18 +116,23 @@ void menu_livres() {
 		switch(choix) {
 			case 1:
 				rechercher_livre();
+				saisie_entree();
 				break;
 			case 2:
 				emprunter_livre();
+				saisie_entree();
 				break;
 			case 3:
 				retourner_livre();
+				saisie_entree();
 				break;
 			case 4:
 				livres_empruntes();
+				saisie_entree();
 				break;
 			case 5:
 				livres_disponibles();
+				saisie_entree();
 				break;
 			case 6:
 				break;
@@ -160,12 +165,15 @@ void menu_compte() {
 		switch(choix) {
 			case 1:
 				modifier_compte();
+				saisie_entree();
 				break;
 			case 2:
 				supprimer_compte();
+				saisie_entree();
 				break;
 			case 3:
 				afficher_compte();
+				saisie_entree();
 				break;
 			case 4:
 				break;
@@ -201,21 +209,27 @@ void menu_administration() {
 		switch(choix) {
 			case 1:
 				ajouter_livre();
+				saisie_entree();
 				break;
 			case 2:
 				supprimer_livre();
+				saisie_entree();
 				break;
 			case 3:
 				rechercher_compte();
+				saisie_entree();
 				break;
 			case 4:
 				ajouter_compte();
+				saisie_entree();
 				break;
 			case 5:
 				supprimer_compte_admin();
+				saisie_entree();
 				break;
 			case 6:
 				modifier_compte_admin();
+				saisie_entree();
 				break;
 			case 7:
 				break;

@@ -34,7 +34,7 @@ LDOPTS = -lsqlite3 -L$(LIBDIR) -lm
 INCLUDEOPTS = -I$(INCDIR)
 
 # options de debuggage si make debug
-#DEBOPTS ?= -DDEBUG
+DEBOPTS ?= -DDEBUG
 
 # options de compilation
 COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 -DSQLITE_USER_AUTHENTICATION $(INCLUDEOPTS)
@@ -115,3 +115,6 @@ Main : Main.o db_functions.o debug.o structs.o sqlite3.o menu.o fonctions.o menu
 # regle pour "nettoyer" le r�pertoire
 clean:
 	rm -fR $(EXECUTABLES) *.o *.eps
+
+clear:
+	rm -fR [^sqlite3]*.o *.eps

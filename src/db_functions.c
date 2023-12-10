@@ -384,7 +384,7 @@ int SQL_Compte_recherche(Compte *user) {
 
 	if (step == SQLITE_DONE) {
 		debug("No result\n");
-		return step;
+		return 0;
 	}
 
 	// Get the values
@@ -397,7 +397,7 @@ int SQL_Compte_recherche(Compte *user) {
 	// Copy the strings
 	init_Compte(user, id_user, nom, prenom, mail, admin);
 
-	return step;
+	return 1;
 }
 
 
@@ -443,7 +443,7 @@ int SQL_creation_compte(Compte *user, char *mot_de_passe) {
 	char id_user[10];
 	sprintf(id_user, "%d", user->id_user);
 
-	rc = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), user->admin);
+	rc = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
 	
 	return rc;
 }
@@ -454,6 +454,7 @@ int SQL_connexion(Compte *user, char *mot_de_passe) {
 	// Make the id_user go from int to char (for the sqlite3_user_authenticate function)
 	char id_user[10];
 	sprintf(id_user, "%d", user->id_user);
+	debug("id_user = %s\n", id_user);
 
 	rc = sqlite3_user_authenticate(db, id_user, mot_de_passe, strlen(mot_de_passe));
 	
@@ -465,7 +466,7 @@ int SQL_changement_mdp(Compte *user, char *mot_de_passe) {
 	char id_user[10];
 	sprintf(id_user, "%d", user->id_user);
 
-	int rc = sqlite3_user_change(db, id_user, mot_de_passe, strlen(mot_de_passe), user->admin);
+	int rc = sqlite3_user_change(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
 	
 	return rc;
 }
