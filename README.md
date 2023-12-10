@@ -58,6 +58,8 @@ Page de connexion avant recherche
 -> compte invité, sans mot de passe pour tout de même faire une recherche
 (pas de possibilité d'emprunt ou d'historique des livres empruntés)
 
+**-> Utiliser les USER intégrés à SQL**
+
 Page listant les livres empruntés par le user (sur le côté)
 
 2. Recherche avancée :
