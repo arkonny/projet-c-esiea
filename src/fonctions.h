@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <crypt.h>
+#include <time.h>
 #include "structs.h"
 #include "debug.h"
 #include "db_functions.h"
@@ -22,11 +23,13 @@ char *saisie_chaine_double(char *entree);
 void saisie_entree();
 
 // Saisie binaire (oui/non)
-int saisie_binaire();
+int saisie_binaire(char *entree);
 
 // Hashage d'une chaîne de caractères
 // Retourne le hash
 char *hash(char *mdp, int salt);
+
+char *date_actuelle();
 
 // Connexion de l'utilisateur
 // Demande le mail
@@ -40,10 +43,5 @@ int user_deconnexion(Compte *user);
 // Demande nom, prénom, mail, mot de passe
 // Propose admin si currentUser est admin
 int user_inscription(Compte *user);
-
-// Affiche les informations d'un utilisateur
-// Utilisateur courant par défaut
-// Recherche utilisateur si currentUser est admin
-int user_afficher();
 
 #endif

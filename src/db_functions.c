@@ -150,9 +150,11 @@ int SQL_recherche(Livre *livre, listeLivre *liste) {
 		char *titre = (char *) sqlite3_column_text(recherche_stmt, 1);
 		char *auteur = (char *) sqlite3_column_text(recherche_stmt, 2);
 		char *genre = (char *) sqlite3_column_text(recherche_stmt, 3);
+		int id_user = sqlite3_column_int(recherche_stmt, 4);
+		char *date_emprunt = (char *) sqlite3_column_text(recherche_stmt, 5);
 
 		// Copy the strings
-		init_Livre(livre, isbn, titre, auteur, genre, 0, "");
+		init_Livre(livre, isbn, titre, auteur, genre, id_user, date_emprunt);
 
 		// Add the Livre object to the listLivre
 		ajouter_tete_listeLivre(liste, livre);
@@ -284,7 +286,8 @@ int SQL_ajout(Livre *livre) {
 }
 
 
-int SQL_emprunt(Livre *livre, Compte *user) {
+int SQL_emprunt(Livre *livre) {
+	debug("=>SQL_emprunt\n");
 	char *sql_insert = "UPDATE Livres SET Date_emprunt = @Date_emprunt, Id_User = @Id_User WHERE ISBN = @ISBN;";
 
   // Prepare the query
@@ -299,12 +302,16 @@ int SQL_emprunt(Livre *livre, Compte *user) {
   if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
     sqlite3_bind_text(emprunt_stmt, 1, (char *) livre->date_emprunt, -1, SQLITE_STATIC);
-		sqlite3_bind_int(emprunt_stmt, 2, user->id_user);
+		debug("date_emprunt = %s\n", livre->date_emprunt);
+		sqlite3_bind_int(emprunt_stmt, 2, livre->id_user);
+		debug("id_user = %d\n", livre->id_user);
 		sqlite3_bind_text(emprunt_stmt, 3, (char *) livre->isbn, -1, SQLITE_STATIC);
+		debug("isbn = %s\n", livre->isbn);
 		debug("Inserted arguments\n");
   }
 
 	rc = sqlite3_step(emprunt_stmt);
+	debug("SQL_emprunt = %d\n", rc);
   return rc;
 }
 

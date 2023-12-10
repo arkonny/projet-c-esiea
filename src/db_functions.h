@@ -27,7 +27,7 @@ int SQL_close();
 * Fonctions de recherche *
 *************************/
 // Les objets de type Livre et Compte ne sont pas forcément complets
-// d'où leur utilisation pour des fonctions de création de compte et de livre
+// pour qu'ils soient complétés par les fonctions de recherche
 int SQL_recherche(Livre *livre, listeLivre *liste);
 
 // Retourne une liste de livres empruntés par un utilisateur
@@ -41,7 +41,7 @@ int SQL_disponibilite(Livre *livre);
 * Fonctions de gestion des livres *
 **********************************/
 int SQL_ajout(Livre *livre);
-int SQL_emprunt(Livre *livre, Compte *user);
+int SQL_emprunt(Livre *livre);
 int SQL_retour(Livre *livre);
 int SQL_suppression(Livre *livre);
 

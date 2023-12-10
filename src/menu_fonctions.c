@@ -20,9 +20,11 @@ void rechercher_livre() {
 void emprunter_livre() {
 	char *isbn = saisie_chaine("ISBN");
 	Livre *livre = malloc(sizeof(Livre));
-	init_Livre(livre, isbn, "", "", "", 0, "");
+	char *date = date_actuelle();
+	init_Livre(livre, isbn, "", "", "", currentUser->id_user, date);
+	free(date);
 	free(isbn);
-	if (SQL_emprunt(livre, currentUser) == SQLITE_DONE) {
+	if (SQL_emprunt(livre) == SQLITE_DONE) {
 		printf("Livre emprunté avec succès !\n");
 	} else {
 		printf("Erreur lors de l'emprunt du livre !\n");
@@ -44,7 +46,14 @@ void retourner_livre() {
 }
 
 void livres_empruntes() {
-	printf("Fonctionnalité non implémentée\n");
+	listeLivre *resultat = malloc(sizeof(listeLivre));
+	init_listeLivre_vide(resultat);
+	if (SQL_livres_empruntes(currentUser, resultat) == SQLITE_DONE) {
+		afficher_listeLivre(resultat);
+	} else {
+		printf("Erreur lors de la récupération des livres empruntés\n");
+	}
+	liberer_listeLivre(resultat);
 }
 
 void livres_disponibles() {
@@ -62,7 +71,7 @@ void supprimer_compte() {
 }
 
 void afficher_compte() {
-	printf("ID | Nom      | Prénom   | Mail     | Admin\n");
+	printf("ID | Nom       | Prénom    | Mail      | Admin\n");
 	print_Compte(currentUser);
 }
 

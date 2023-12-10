@@ -64,6 +64,13 @@ char *hash(char *mdp, int salt) {
 	return hash;
 }
 
+char *date_actuelle() {
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+	char *date = malloc(11);
+	sprintf(date, "%d/%d/%d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
+	return date;
+}
 
 // Connexion de l'utilisateur
 // Demande le mail
@@ -157,11 +164,4 @@ int user_inscription(Compte *user) {
 	clear_chaine(mdp);
 	debug("user_inscription : %d\n", res);
 	return res;
-}
-
-// Affiche les informations d'un utilisateur
-// Utilisateur courant par défaut
-// Recherche utilisateur si currentUser est admin
-int user_afficher() {
-	return 0;
 }
