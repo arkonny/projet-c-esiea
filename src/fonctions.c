@@ -66,13 +66,8 @@ int user_connexion(Compte *user) {
 	debug("Recherche de compte : %d\n", res);
 	if (!res) {
 		printf("Compte introuvable.\n");
-		if (saisie_binaire("Inscription ? (O/N)")) {
-			res = user_inscription(user);
-			res = user_connexion(user);
-		} else {
-			printf("Connexion annulée.\n");
-			return -1;
-		}
+		printf("Connexion annulée.\n");
+		return -1;
 	} else {
 		char *mdp = saisie_chaine("Mot de passe");
 		res = SQL_connexion(user, mdp);
