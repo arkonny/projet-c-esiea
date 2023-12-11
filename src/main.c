@@ -12,6 +12,14 @@ Compte *currentUser;
 
 int main(int argc, char **argv) {
 
+	// Affichage du titre
+	printf("|=============================|\n");
+	printf("                               \n");
+	printf("       Librairie SQLite3       \n");
+	printf("         - Projet C -          \n");
+	printf("                               \n");
+	printf("|=============================|\n\n");
+
 	// Ouverture de la base de données
 	int res = SQL_open();
 	if (res) return err();
@@ -27,9 +35,11 @@ int main(int argc, char **argv) {
 	***********************************************/
 	res = SQL_check_init();
 	if (res == 1) {
-		debug("La base de données n'était pas initialisée\n");
+		printf("La base de données n'était pas initialisée\n");
+		saisie_entree();
 		// Création du compte utilisateur administateur
-		printf("Entrez les informations du compte administrateur\n");
+		print_titre("Création du compte administrateur");
+		printf("Entrez les informations du compte\n");
 		char *nom = saisie_chaine("Nom");
 		char *prenom = saisie_chaine("Prénom");
 		char *mail = saisie_chaine_double("Adresse mail");
@@ -40,7 +50,7 @@ int main(int argc, char **argv) {
 		res = SQL_init();
 		init_Compte(currentUser, 1, nom, prenom, mail, mdp_hash, 1);
 		SQL_insertion_compte(currentUser);
-		printf("Compte administrateur créé\n");
+		print_retour("Compte administrateur créé");
 		free(nom);
 		free(prenom);
 		free(mail);

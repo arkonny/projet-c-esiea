@@ -19,6 +19,7 @@ void livres_empruntes();
 
 void livres_disponibles();
 
+void livres_totaux();
 
 // Menu compte
 void modifier_compte();

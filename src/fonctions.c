@@ -4,7 +4,7 @@
 // Retourne la chaîne saisie
 char *saisie_chaine(char *entree) {
 		char *chaine = malloc(101);
-		printf("%s : ", entree);
+		printf("%s -> ", entree);
 		fgets(chaine, 100, stdin);
 		chaine[strlen(chaine)-1] = '\0';
 		return chaine;
@@ -35,6 +35,7 @@ char *saisie_chaine_double(char *entree) {
 
 // Saisie de la touche entrée
 void saisie_entree() {
+	printf("[Entrée pour continuer]");
 	getchar();
 }
 
@@ -72,11 +73,33 @@ char *date_actuelle() {
 	return date;
 }
 
+// Fonction d'affichage de l'action en cours
+// Prend en paramètre un titre
+// Affiche le titre centré dans un cadre
+void print_titre(char *titre) {
+	printf("\n\n");
+	int taille = strlen(titre);
+	for (int i = 0; i < 30 - taille/2; i++) {
+		printf("=");
+	}
+	printf("| %s |", titre);
+	for (int i = 0; i < 30 - taille/2; i++) {
+		printf("=");
+	}
+	printf("\n");
+}
+
+void print_retour(char *titre) {
+	printf("|=> %s\n", titre);
+}
+
+
 // Connexion de l'utilisateur
 // Demande le mail
 // Si pas de compte correspondant dans la base, inscription
 // Sinon, connexion
 int user_connexion(Compte *user) {
+	print_titre("Connexion");
 	char *mail = saisie_chaine("Entrez votre mail");
 	init_Compte(user, 0, "", "", mail, "", 0);
 	free(mail);
@@ -84,17 +107,17 @@ int user_connexion(Compte *user) {
 	debug_Compte(user);
 	debug("Recherche de compte : %d\n", res);
 	if (!res) {
-		printf("Compte introuvable.\n");
-		if (saisie_binaire("Inscription ? (O/N)")) {
+		print_retour("Compte introuvable.\n");
+		if (saisie_binaire("Inscription ? [O/N]")) {
 			res = user_inscription(user);
 			if (res == -1) {
-				printf("Inscription annulée.\n");
+				print_retour("Inscription annulée.\n");
 				return -1;
 			} else {
 				res = user_connexion(user);
 			}
 		} else {
-			printf("Connexion annulée.\n");
+			print_retour("Connexion annulée.\n");
 			return -1;
 		}
 	} else {
@@ -103,8 +126,8 @@ int user_connexion(Compte *user) {
 		res = strcmp(mdp_hash, user->hash);
 		while(res != 0) {
 			printf("Mot de passe incorrect.\n");
-			if (!saisie_binaire("Réessayer ? (O/N)")) {
-				printf("Connexion annulée.\n");
+			if (!saisie_binaire("Réessayer ? [O/N]")) {
+				print_retour("Connexion annulée.\n");
 				return -1;
 			}
 			clear_chaine(mdp);
@@ -113,14 +136,14 @@ int user_connexion(Compte *user) {
 			res = strcmp(mdp_hash, user->hash);
 		}
 		clear_chaine(mdp);
-		printf("Connexion réussie.\n");
+		print_retour("Connexion réussie.\n");
 	}
 	return res;
 }
 
 int user_deconnexion(Compte *user) {
 	init_Compte(user, 0, "", "", "", "", 0);
-	debug("Déconnexion réussie.\n");
+	print_retour("Déconnexion réussie\n");
 	return 0;
 }
 
@@ -131,7 +154,7 @@ int user_deconnexion(Compte *user) {
 int user_inscription(Compte *user) {
 	int admin = 0;
 	if(currentUser->admin == 1) {
-		if (saisie_binaire("Administrateur ? (O/N)")) {
+		if (saisie_binaire("Administrateur ? [O/N]")) {
 			admin = 1;
 		} 
 	} 
@@ -150,7 +173,7 @@ int user_inscription(Compte *user) {
 	debug("Recherche de compte : %d\n", res);
 	debug_Compte(user);
 	if (res) {
-		printf("Compte déjà existant.\n");
+		print_retour("Compte déjà existant.\n");
 		res = -1;
 	} else {
 		res = SQL_insertion_compte(user);

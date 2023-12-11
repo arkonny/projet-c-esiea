@@ -31,6 +31,9 @@ char *hash(char *mdp, int salt);
 
 char *date_actuelle();
 
+void print_titre(char *titre);
+void print_retour(char *titre);
+
 // Connexion de l'utilisateur
 // Demande le mail
 // Si pas de compte correspondant dans la base, inscription

@@ -34,7 +34,7 @@ LDOPTS = -lsqlite3 -lcrypt -L$(LIBDIR) -lm
 INCLUDEOPTS = -I$(INCDIR)
 
 # options de debuggage si make debug
-DEBOPTS ?= -DDEBUG
+#DEBOPTS ?= -DDEBUG
 
 # options de compilation
 COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 -lcrypt $(INCLUDEOPTS)

@@ -33,9 +33,7 @@ int SQL_recherche(Livre *livre, listeLivre *liste);
 // Retourne une liste de livres empruntés par un utilisateur
 int SQL_livres_empruntes(Compte *user, listeLivre *liste);
 
-// Complète un objet Livre avec les informations de la base de données
-int SQL_disponibilite(Livre *livre);
-
+int SQL_livres_totaux(listeLivre *liste);
 
 /**********************************
 * Fonctions de gestion des livres *
