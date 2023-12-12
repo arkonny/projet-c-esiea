@@ -12,5 +12,5 @@ void debug_Livre(Livre *livre) {
 }
 
 void debug_Compte(Compte *compte) {
-	debug("%d, %s, %s, %s, %d\n", compte->id_user, compte->nom, compte->prenom, compte->mail, compte->admin);
+	debug("%d, %s, %s, %s, %s, %d\n", compte->id_user, compte->nom, compte->prenom, compte->mail, compte->hash, compte->admin);
 }

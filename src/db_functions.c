@@ -5,7 +5,6 @@ sqlite3_stmt *retour_stmt = NULL;
 sqlite3_stmt *emprunt_stmt = NULL;
 sqlite3_stmt *ajout_stmt = NULL;
 sqlite3_stmt *recherche_stmt = NULL;
-sqlite3_stmt *disponibilite_stmt = NULL;
 sqlite3_stmt *livres_empruntes_stmt = NULL;
 sqlite3_stmt *creation_compte_stmt = NULL;
 sqlite3_stmt *compte_recherche_stmt = NULL;
@@ -65,7 +64,7 @@ int SQL_init() {
   char *sql_livres = "DROP TABLE IF EXISTS Livres;"
 										 "CREATE TABLE Livres(ISBN TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT, Id_User INT, Date_Emprunt TEXT);"
 										 "DROP TABLE IF EXISTS Comptes;"
-										 "CREATE TABLE Comptes(Id_User INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Prenom TEXT, Mail TEXT, Admin INTEGER);";
+										 "CREATE TABLE Comptes(Id_User INTEGER PRIMARY KEY AUTOINCREMENT, Nom TEXT, Prenom TEXT, Mail TEXT, Hash TEXT, Admin INTEGER);";
                      
   int rc = sqlite3_exec(db, sql_livres, 0, 0, &err_msg);
   if (db_error_handler_err_msg(rc, err_msg, "SQL error: ")) {
@@ -77,7 +76,7 @@ int SQL_init() {
 
 int SQL_check_init() {
 	char *err_msg = 0;
-	char *sql_livres = "SELECT * FROM Livres;";
+	char *sql_livres = "SELECT * FROM Comptes;";
 	int rc = sqlite3_exec(db, sql_livres, 0, 0, &err_msg);
 	debug("SQL_check_init() returned %d\n", rc);
 	return rc;
@@ -99,7 +98,6 @@ int SQL_close() {
 	sqlite3_finalize(emprunt_stmt);
 	sqlite3_finalize(ajout_stmt);
 	sqlite3_finalize(recherche_stmt);
-	sqlite3_finalize(disponibilite_stmt);
 	sqlite3_finalize(livres_empruntes_stmt);
 	sqlite3_finalize(creation_compte_stmt);
 	sqlite3_finalize(compte_recherche_stmt);
@@ -137,7 +135,22 @@ int SQL_recherche(Livre *livre, listeLivre *liste) {
 	int step = sqlite3_step(recherche_stmt);
 	if (step == SQLITE_DONE) {
 		debug("No result\n");
-		return step;
+		return 0;
+	}
+
+	// If the list is null, return the first result in livre
+	if (liste == NULL) {
+		// Get the values
+		char *isbn = (char *) sqlite3_column_text(recherche_stmt, 0);
+		char *titre = (char *) sqlite3_column_text(recherche_stmt, 1);
+		char *auteur = (char *) sqlite3_column_text(recherche_stmt, 2);
+		char *genre = (char *) sqlite3_column_text(recherche_stmt, 3);
+		int id_user = sqlite3_column_int(recherche_stmt, 4);
+		char *date_emprunt = (char *) sqlite3_column_text(recherche_stmt, 5);
+
+		// Copy the strings
+		init_Livre(livre, isbn, titre, auteur, genre, id_user, date_emprunt);
+		return 1;
 	}
 
 	// Get the result
@@ -150,9 +163,11 @@ int SQL_recherche(Livre *livre, listeLivre *liste) {
 		char *titre = (char *) sqlite3_column_text(recherche_stmt, 1);
 		char *auteur = (char *) sqlite3_column_text(recherche_stmt, 2);
 		char *genre = (char *) sqlite3_column_text(recherche_stmt, 3);
+		int id_user = sqlite3_column_int(recherche_stmt, 4);
+		char *date_emprunt = (char *) sqlite3_column_text(recherche_stmt, 5);
 
 		// Copy the strings
-		init_Livre(livre, isbn, titre, auteur, genre, 0, "");
+		init_Livre(livre, isbn, titre, auteur, genre, id_user, date_emprunt);
 
 		// Add the Livre object to the listLivre
 		ajouter_tete_listeLivre(liste, livre);
@@ -164,7 +179,7 @@ int SQL_recherche(Livre *livre, listeLivre *liste) {
 		step = sqlite3_step(recherche_stmt);
 	}
 
-	return step;
+	return 1;
 }
 
 // Liste de livre doit être une liste chainée
@@ -220,41 +235,45 @@ int SQL_livres_empruntes(Compte *user, listeLivre *liste) {
 	return step;
 }
 
+int SQL_livres_totaux(listeLivre *liste) {
+	char *err_msg = 0;
+	char *sql_select = "SELECT * FROM Livres;";
 
-// Complète un objet Livre avec les informations de la base de données
-int SQL_disponibilite(Livre *livre) {
-	char *sql_select = "SELECT Date_Emprunt FROM Livres WHERE ISBN = @ISBN;";
+	int step = sqlite3_exec(db, sql_select, 0, 0, &err_msg);
 
-	// Prepare the query
-	//db_stmt_init(recherche_stmt, sql_select);
-	if (disponibilite_stmt == NULL) {
-		sqlite3_prepare_v2(db, sql_select, -1, &disponibilite_stmt, 0);
-	} else {
-		 sqlite3_reset(disponibilite_stmt);
-	}
-
-	// Bind the parameters
-	sqlite3_bind_text(disponibilite_stmt, 1, livre->isbn, -1, SQLITE_STATIC);
-	debug("Inserted arguments\n");
-
-	// Get the result
-	int step = sqlite3_step(disponibilite_stmt);
-	if (step == SQLITE_ROW) {
-		// Get the values
-		char *date_emprunt = (char *) sqlite3_column_text(disponibilite_stmt, 0);
-		strcpy(livre->date_emprunt, date_emprunt);
-		debug("date_emprunt = %s\n", livre->date_emprunt);
-		return 0;
-	} else if (step == SQLITE_DONE) {
+	if (step == SQLITE_DONE) {
 		debug("No result\n");
-		return 1;
-	} else {
-		debug("Error\n");
 		return step;
 	}
+
+	// Get the result
+	while (step == SQLITE_ROW) {
+		Livre *livre = malloc(sizeof(Livre));
+
+		// Get the values
+		char *isbn = (char *) sqlite3_column_text(livres_empruntes_stmt, 0);
+		char *titre = (char *) sqlite3_column_text(livres_empruntes_stmt, 1);
+		char *auteur = (char *) sqlite3_column_text(livres_empruntes_stmt, 2);
+		char *genre = (char *) sqlite3_column_text(livres_empruntes_stmt, 3);
+		livre->id_user = sqlite3_column_int(livres_empruntes_stmt, 4);
+		char *date_emprunt = (char *) sqlite3_column_text(livres_empruntes_stmt, 5);
+
+		// Copy the strings
+		init_Livre(livre, isbn, titre, auteur, genre, livre->id_user, date_emprunt);
+
+		// Add the Livre object to the listLivre
+		ajouter_tete_listeLivre(liste, livre);
+		debug("Got book %d:\n",liste->taille);
+		debug_Livre(liste->tete->livre);
+		debug("\n");
+
+		// Get the next result
+		step = sqlite3_step(livres_empruntes_stmt);
+	}
+
+	debug("SQL_livres_totaux() returned %d\n", step);
+	return step;
 }
-
-
 
 /**********************************
 * Fonctions de gestion des livres *
@@ -284,7 +303,8 @@ int SQL_ajout(Livre *livre) {
 }
 
 
-int SQL_emprunt(Livre *livre, Compte *user) {
+int SQL_emprunt(Livre *livre) {
+	debug("=>SQL_emprunt\n");
 	char *sql_insert = "UPDATE Livres SET Date_emprunt = @Date_emprunt, Id_User = @Id_User WHERE ISBN = @ISBN;";
 
   // Prepare the query
@@ -299,12 +319,16 @@ int SQL_emprunt(Livre *livre, Compte *user) {
   if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
     // Bind the parameters
     sqlite3_bind_text(emprunt_stmt, 1, (char *) livre->date_emprunt, -1, SQLITE_STATIC);
-		sqlite3_bind_int(emprunt_stmt, 2, user->id_user);
+		debug("date_emprunt = %s\n", livre->date_emprunt);
+		sqlite3_bind_int(emprunt_stmt, 2, livre->id_user);
+		debug("id_user = %d\n", livre->id_user);
 		sqlite3_bind_text(emprunt_stmt, 3, (char *) livre->isbn, -1, SQLITE_STATIC);
+		debug("isbn = %s\n", livre->isbn);
 		debug("Inserted arguments\n");
   }
 
 	rc = sqlite3_step(emprunt_stmt);
+	debug("SQL_emprunt = %d\n", rc);
   return rc;
 }
 
@@ -392,17 +416,18 @@ int SQL_Compte_recherche(Compte *user) {
 	char *nom = (char *) sqlite3_column_text(compte_recherche_stmt, 1);
 	char *prenom = (char *) sqlite3_column_text(compte_recherche_stmt, 2);
 	char *mail = (char *) sqlite3_column_text(compte_recherche_stmt, 3);
-	int admin = sqlite3_column_int(compte_recherche_stmt, 4);
+	char *hash = (char *) sqlite3_column_text(compte_recherche_stmt, 4);
+	int admin = sqlite3_column_int(compte_recherche_stmt, 5);
 
 	// Copy the strings
-	init_Compte(user, id_user, nom, prenom, mail, admin);
+	init_Compte(user, id_user, nom, prenom, mail, hash, admin);
 
 	return 1;
 }
 
 
 int SQL_insertion_compte(Compte *user) {
-	char *sql_insert = "INSERT INTO Comptes(Nom, Prenom, Mail, Admin) VALUES(@Nom, @Prenom, @Mail, @Admin);";
+	char *sql_insert = "INSERT INTO Comptes(Nom, Prenom, Mail, Hash, Admin) VALUES(@Nom, @Prenom, @Mail, @Hash, @Admin);";
 
 	// Prepare the query
 	// int rc = db_stmt_init(creation_compte_stmt, sql_insert);
@@ -418,7 +443,8 @@ int SQL_insertion_compte(Compte *user) {
 		sqlite3_bind_text(creation_compte_stmt, 1, user->nom, -1, SQLITE_STATIC);
 		sqlite3_bind_text(creation_compte_stmt, 2, user->prenom, -1, SQLITE_STATIC);
 		sqlite3_bind_text(creation_compte_stmt, 3, user->mail, -1, SQLITE_STATIC);
-		sqlite3_bind_int(creation_compte_stmt, 4, user->admin);
+		sqlite3_bind_text(creation_compte_stmt, 4, user->hash, -1, SQLITE_STATIC);
+		sqlite3_bind_int(creation_compte_stmt, 5, user->admin);
 		debug("Inserted arguments\n");
 	}
 
@@ -431,45 +457,34 @@ int SQL_insertion_compte(Compte *user) {
 
 	// Get the id_user by searching the account
 	rc = SQL_Compte_recherche(user);
+	debug("SQL_Compte_recherche returned %d\n", rc);
 	debug("Got id_user %d\n", user->id_user);
 
 	return rc;
 }
 
-int SQL_creation_compte(Compte *user, char *mot_de_passe) {
-	int rc = SQL_insertion_compte(user);
+int SQL_changement_mdp(Compte *user, char *new_hash) {
+	char *sql_update = "UPDATE Comptes SET Hash = @Hash WHERE Mail = @Mail;";
 
-	// Make the id_user go from int to char (for the sqlite3_user_add function)
-	char id_user[10];
-	sprintf(id_user, "%d", user->id_user);
-
-	rc = sqlite3_user_add(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
-	
-	return rc;
-}
-
-int SQL_connexion(Compte *user, char *mot_de_passe) {
+	// Prepare the query
+	// int rc = db_stmt_init(changement_mail_stmt, sql_update);
 	int rc;
-
-	// Make the id_user go from int to char (for the sqlite3_user_authenticate function)
-	char id_user[10];
-	sprintf(id_user, "%d", user->id_user);
-	debug("id_user = %s\n", id_user);
-
-	rc = sqlite3_user_authenticate(db, id_user, mot_de_passe, strlen(mot_de_passe));
-	
+	if (changement_mail_stmt == NULL) {
+		rc = sqlite3_prepare_v2(db, sql_update, -1, &changement_mail_stmt, 0);
+	} else {
+		rc = sqlite3_reset(changement_mail_stmt);
+	}
+	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
+		// Bind the parameters
+		sqlite3_bind_text(changement_mail_stmt, 1, new_hash, -1, SQLITE_STATIC);
+		sqlite3_bind_text(changement_mail_stmt, 2, user->mail, -1, SQLITE_STATIC);
+		debug("Inserted arguments\n");
+	}
+	rc = sqlite3_step(changement_mail_stmt);
+	strncpy(user->hash, new_hash, 100);
 	return rc;
 }
 
-int SQL_changement_mdp(Compte *user, char *mot_de_passe) {
-	// Make the id_user go from int to char (for the sqlite3_user_change function)
-	char id_user[10];
-	sprintf(id_user, "%d", user->id_user);
-
-	int rc = sqlite3_user_change(db, id_user, mot_de_passe, strlen(mot_de_passe), 1);
-	
-	return rc;
-}
 
 int SQL_changement_mail(Compte *user, char *new_mail) {
 	char *sql_update = "UPDATE Comptes SET Mail = @NewMail WHERE Mail = @Mail;";
@@ -498,10 +513,25 @@ int SQL_changement_mail(Compte *user, char *new_mail) {
 	return rc;
 }
 
+
 int SQL_suppression_compte(Compte *user) {
-	// Make the id_user go from int to char (for the sqlite3_user_delete function)
-	char id_user[10];
-	sprintf(id_user, "%d", user->id_user);
-	int rc = sqlite3_user_delete(db, id_user);
+	char *sql_remove = "DELETE FROM Comptes WHERE Mail = @Mail;";
+
+	// Prepare the query
+	// int rc = db_stmt_init(creation_compte_stmt, sql_remove);
+	int rc;
+	if (creation_compte_stmt == NULL) {
+		rc = sqlite3_prepare_v2(db, sql_remove, -1, &creation_compte_stmt, 0);
+	} else {
+		rc = sqlite3_reset(creation_compte_stmt);
+	}
+
+	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
+		// Bind the parameters
+		sqlite3_bind_text(creation_compte_stmt, 1, user->mail, -1, SQLITE_STATIC);
+		debug("Inserted arguments\n");
+	}
+
+	rc = sqlite3_step(creation_compte_stmt);
 	return rc;
 }

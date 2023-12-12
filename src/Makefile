@@ -28,19 +28,19 @@ INCDIR = .
 LIBDIR = .
 
 # options pour l'addition des liens
-LDOPTS = -lsqlite3 -L$(LIBDIR) -lm
+LDOPTS = -lsqlite3 -lcrypt -L$(LIBDIR) -lm
 
 # options pour la recherche des fichiers .o et .h
 INCLUDEOPTS = -I$(INCDIR)
 
 # options de debuggage si make debug
-DEBOPTS ?= -DDEBUG
+#DEBOPTS ?= -DDEBUG
 
 # options de compilation
-COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 -DSQLITE_USER_AUTHENTICATION $(INCLUDEOPTS)
+COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 -lcrypt $(INCLUDEOPTS)
 
 # liste des executables
-EXECUTABLES = Main Test_db_functions
+EXECUTABLES = main
 
 
 #############################################################################
@@ -56,7 +56,7 @@ all : $(EXECUTABLES)
 #  remplace les regles de compilation separee de la forme
 #	module.o : module.c module.h
 #		$(CC) -c $(COMPILOPTS) module.c
-%.o : %.c %.h
+%.o : %.c %.h debug.h structs.h db_functions.h menu.h menu_fonctions.h fonctions.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module "$*
@@ -67,7 +67,7 @@ all : $(EXECUTABLES)
 # regles explicites de compilation separee de modules
 # n'ayant pas de fichier .h ET/OU dependant d'autres modules
 
-db_functions.o : db_functions.c db_functions.h structs.h debug.h sqlite3userauth.h
+db_functions.o : db_functions.c db_functions.h structs.h debug.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module db_functions"
@@ -81,14 +81,14 @@ menu.o : menu.c menu.h menu_fonctions.h
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-Test%.o : Test%.c db_functions.h structs.h debug.h
+test%.o : test%.c db_functions.h structs.h debug.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module "$@
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-Main.o : Main.c db_functions.h structs.h debug.h menu.h fonctions.h
+main.o : main.c db_functions.h structs.h debug.h menu.h fonctions.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module "$@
@@ -98,14 +98,14 @@ Main.o : Main.c db_functions.h structs.h debug.h menu.h fonctions.h
 ########################################################
 # regles explicites de creation des executables
 
-Test% : Test%.o db_functions.o debug.o structs.o sqlite3.o
+test% : test%.o db_functions.o debug.o structs.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -g -o $@
 
-Main : Main.o db_functions.o debug.o structs.o sqlite3.o menu.o fonctions.o menu_fonctions.o
+main : main.o db_functions.o debug.o structs.o menu.o fonctions.o menu_fonctions.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@

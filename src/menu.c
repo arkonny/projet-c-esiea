@@ -104,15 +104,16 @@ void affichage_menu_livres() {
 		"[3]. Retourner un livre\n"
 		"[4]. Livres empruntés\n"
 		"[5]. Livres disponibles\n"
-		"[6]. Retour\n";
+		"[6]. Livres totaux\n"
+		"[7]. Retour\n";
 	printf("%s", menu);
 }
 
 void menu_livres() {
 	int choix = 0;
-	while(choix != 6) {
+	while(choix != 7) {
 		affichage_menu_livres();
-		choix = selection(6);
+		choix = selection(7);
 		switch(choix) {
 			case 1:
 				rechercher_livre();
@@ -135,6 +136,10 @@ void menu_livres() {
 				saisie_entree();
 				break;
 			case 6:
+				livres_totaux();
+				saisie_entree();
+				break;
+			case 7:
 				break;
 			default:
 				printf("Erreur\n");
