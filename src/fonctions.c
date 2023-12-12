@@ -20,6 +20,7 @@ char *saisie_chaine(char *entree) {
 		char *chaine = malloc(101);
 		printf("%s -> ", entree);
 		gets_s(chaine, 100);
+		// Commenté pour la compatibilité avec Windows
 		//fgets(chaine, 100, stdin);
 		//chaine[strlen(chaine)-1] = '\0';
 		return chaine;
@@ -41,10 +42,12 @@ char *saisie_chaine_double(char *entree) {
 	char *chaine = saisie_chaine(entree);
 	char *chaine2 = saisie_chaine("Confirmation");
 	while (strcmp(chaine, chaine2) != 0) {
+		free(chaine); free(chaine2);
 		printf("Les entrées ne correspondent pas.\n");
 		chaine = saisie_chaine(entree);
 		chaine2 = saisie_chaine("Confirmation");
 	}
+	free(chaine2);
 	return chaine;
 }
 
@@ -59,14 +62,16 @@ void saisie_entree() {
 int saisie_binaire(char *entree) {
 	char *chaine = saisie_chaine(entree);
 	while (strcmp(chaine, "O") != 0 && strcmp(chaine, "N") != 0) {
+		free(chaine);
 		printf("Entrée invalide.\n");
 		chaine = saisie_chaine(entree);
 	}
+	int i = 0;
 	if (strcmp(chaine, "O") == 0) {
-		return 1;
-	} else {
-		return 0;
+		i = 1;
 	}
+	free(chaine);
+	return i;
 }
 
 char *hash(char *mdp, int salt) {
