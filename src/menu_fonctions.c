@@ -2,7 +2,7 @@
 
 // Menu livres
 void rechercher_livre() {
-	print_titre("Recherche de livres\n");
+	print_titre("Recherche de livres");
 	char *entree = saisie_chaine("ISBN, titre, auteur ou genre");
 	Livre *livre = malloc(sizeof(Livre));
 	init_Livre(livre, entree, entree, entree, entree, -1, "-1");
@@ -10,16 +10,17 @@ void rechercher_livre() {
 	listeLivre *resultat = malloc(sizeof(listeLivre));
 	init_listeLivre_vide(resultat);
 	if (SQL_recherche(livre, resultat)) {
+		print_retour("Livre(s) trouvé(s)\n");
 		afficher_listeLivre(resultat);
 	} else {
-		printf("Aucun livre trouvé\n");
+		print_retour("Aucun livre trouvé\n");
 	}
 	liberer_listeLivre(resultat);
 	free(livre);
 }
 
 void emprunter_livre() {
-	print_titre("Emprunt de livre\n");
+	print_titre("Emprunt de livre");
 	char *isbn = saisie_chaine("ISBN");
 	Livre *livre = malloc(sizeof(Livre));
 	init_Livre(livre, isbn, "", "", "", -1, "-1");
@@ -42,7 +43,7 @@ void emprunter_livre() {
 }
 
 void retourner_livre() {
-	print_titre("Retour de livre\n");
+	print_titre("Retour de livre");
 	char *isbn = saisie_chaine("ISBN");
 	Livre *livre = malloc(sizeof(Livre));
 	init_Livre(livre, isbn, "", "", "", -1, "-1");
@@ -65,7 +66,7 @@ void retourner_livre() {
 }
 
 void livres_empruntes() {
-	print_titre("Livres empruntés\n");
+	print_titre("Livres empruntés");
 	listeLivre *resultat = malloc(sizeof(listeLivre));
 	init_listeLivre_vide(resultat);
 	if (SQL_livres_empruntes(currentUser, resultat) == SQLITE_DONE) {
@@ -82,7 +83,7 @@ void livres_empruntes() {
 
 // En recherchant les livres empruntés par l'utilisateur 0, on obtient les livres disponibles
 void livres_disponibles() {
-	print_titre("Livres disponibles\n");
+	print_titre("Livres disponibles");
 	listeLivre *resultat = malloc(sizeof(listeLivre));
 	init_listeLivre_vide(resultat);
 	Compte *user = malloc(sizeof(Compte));
@@ -101,7 +102,7 @@ void livres_disponibles() {
 }
 
 void livres_totaux() {
-	print_titre("Livres de la base\n");
+	print_titre("Livres de la base");
 	listeLivre *resultat = malloc(sizeof(listeLivre));
 	init_listeLivre_vide(resultat);
 	if (!SQL_livres_totaux(resultat)) {
@@ -134,6 +135,7 @@ void afficher_compte() {
 // Menu administrateur
 
 void ajouter_livre() {
+	print_titre("Ajout de livre");
 	char *titre = saisie_chaine("Titre");
 	char *auteur = saisie_chaine("Auteur");
 	char *genre = saisie_chaine("Genre");
@@ -147,70 +149,75 @@ void ajouter_livre() {
 	free(isbn);
 
 	if (SQL_ajout(livre) == SQLITE_DONE) {
-		printf("Livre ajouté avec succès !\n");
+		print_retour("Livre ajouté avec succès !\n");
 	} else {
-		printf("Erreur lors de l'ajout du livre !\n");
+		print_retour("Erreur lors de l'ajout du livre !\n");
 	}
 
 	free(livre);
 }
 
 void supprimer_livre() {
+	print_titre("Suppression de livre");
 	char *isbn = saisie_chaine("ISBN");
 	Livre *livre = malloc(sizeof(Livre));
 	init_Livre(livre, isbn, "", "", "", 0, "");
 	free(isbn);
 
 	if (SQL_suppression(livre) == 0) {
-		printf("Livre supprimé avec succès\n");
+		print_retour("Livre supprimé avec succès\n");
 	} else {
-		printf("Erreur lors de la suppression du livre\n");
+		print_retour("Erreur lors de la suppression du livre\n");
 	}
 	free(livre);
 }
 
 void rechercher_compte() {
+	print_titre("Recherche de compte");
 	char *mail = saisie_chaine("Mail");
 	Compte *compte = malloc(sizeof(Compte));
 	init_Compte(compte, 0, "", "", mail, "", 0);
 	free(mail);
 
 	if (SQL_Compte_recherche(compte)) {
+		print_retour("Compte trouvé\n");
 		print_Compte(compte);
 	} else {
-		printf("Compte non trouvé\n");
+		print_retour("Compte non trouvé\n");
 	}
 	free(compte);
 }
 
 void ajouter_compte() {
+	print_titre("Ajout de compte");
 	Compte *compte = malloc(sizeof(Compte));
 	init_Compte(compte, 0, "", "", "", "", 0);
 	int res = user_inscription(compte);
 	if (res) {
-		printf("Compte ajouté avec succès !\n");
+		print_retour("Compte ajouté avec succès !\n");
 	} else {
-		printf("Erreur lors de l'ajout du compte !\n");
+		print_retour("Erreur lors de l'ajout du compte !\n");
 	}
 	free(compte);
 }
 
 void supprimer_compte_admin() {
+	print_titre("Suppression de compte");
 	char *mail = saisie_chaine("Mail");
 	Compte *compte = malloc(sizeof(Compte));
 	init_Compte(compte, 0, "", "", mail, "", 0);
 	free(mail);
 
 	if (!SQL_Compte_recherche(compte)) {
-		printf("Compte introuvable\n");
+		print_retour("Compte introuvable\n");
 		free(compte);
 		return;
 	}
 
 	if (SQL_suppression_compte(compte) == SQLITE_DONE) {
-		printf("Compte supprimé avec succès\n");
+		print_retour("Compte supprimé avec succès\n");
 	} else {
-		printf("Erreur lors de la suppression du compte\n");
+		print_retour("Erreur lors de la suppression du compte\n");
 	}
 	free(compte);
 }

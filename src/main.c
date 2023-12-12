@@ -83,6 +83,7 @@ int main(int argc, char **argv) {
 	
 	// Déconnexion de l'utilisateur
 	user_deconnexion(currentUser);
+	//free(currentUser);
 
 	SQL_close();
   return 0;

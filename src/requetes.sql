@@ -6,11 +6,11 @@
 --CREATE TABLE Livres(ISBN TEXT PRIMARY KEY, Titre TEXT, Auteur TEXT, Genre TEXT, Id_User INTEGER, Date_Emprunt TEXT);
 INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('1xxx', 'Le Seigneur des Anneaux', 'J.R.R. Tolkien', 'Fantasy', 0);
 INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('2xxx', '1984', 'George Orwell', 'Dystopie', 0);
-INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('3xxx', 'Orgueil et Préjugés', 'Jane Austen', 'Roman', 0);
-INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('4xxx', 'L''Étranger', 'Albert Camus', 'Roman', 0);
-INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('5xxx', 'Harry Potter à l''école des sorciers', 'J.K. Rowling', 'Fantasy', 0);
-INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('6xxx', 'Les Misérables', 'Victor Hugo', 'Roman', 0);
-INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('7xxx', 'Le Petit Prince', 'Antoine de Saint-Exupéry', 'Conte', 0);
+INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('3xxx', 'Orgueil et Prejuges', 'Jane Austen', 'Roman', 0);
+INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('4xxx', 'L''etranger', 'Albert Camus', 'Roman', 0);
+INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('5xxx', 'Harry Potter à l''ecole des sorciers', 'J.K. Rowling', 'Fantasy', 0);
+INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('6xxx', 'Les Miserables', 'Victor Hugo', 'Roman', 0);
+INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('7xxx', 'Le Petit Prince', 'Antoine de Saint-Exupery', 'Conte', 0);
 INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('8xxx', 'To Kill a Mockingbird', 'Harper Lee', 'Roman', 0);
 INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('9xxx', 'Crime and Punishment', 'Fyodor Dostoevsky', 'Roman', 0);
 INSERT INTO Livres (ISBN, Titre, Auteur, Genre, Id_User) Values('10xx', 'Pride and Prejudice', 'Jane Austen', 'Roman', 0);

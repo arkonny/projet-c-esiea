@@ -40,7 +40,7 @@ INCLUDEOPTS = -I$(INCDIR)
 COMPILOPTS = -g $(DEBOPTS) -Wall -lsqlite3 -lcrypt $(INCLUDEOPTS)
 
 # liste des executables
-EXECUTABLES = Main
+EXECUTABLES = main
 
 
 #############################################################################
@@ -56,7 +56,7 @@ all : $(EXECUTABLES)
 #  remplace les regles de compilation separee de la forme
 #	module.o : module.c module.h
 #		$(CC) -c $(COMPILOPTS) module.c
-%.o : %.c %.h
+%.o : %.c %.h debug.h structs.h db_functions.h menu.h menu_fonctions.h fonctions.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module "$*
@@ -81,14 +81,14 @@ menu.o : menu.c menu.h menu_fonctions.h
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-Test%.o : Test%.c db_functions.h structs.h debug.h
+test%.o : test%.c db_functions.h structs.h debug.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module "$@
 	@echo "---------------------------------------------"
 	$(CC) -c $(COMPILOPTS) $<
 
-Main.o : Main.c db_functions.h structs.h debug.h menu.h fonctions.h
+main.o : main.c db_functions.h structs.h debug.h menu.h fonctions.h
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Compilation du module "$@
@@ -98,14 +98,14 @@ Main.o : Main.c db_functions.h structs.h debug.h menu.h fonctions.h
 ########################################################
 # regles explicites de creation des executables
 
-Test% : Test%.o db_functions.o debug.o structs.o
+test% : test%.o db_functions.o debug.o structs.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@
 	@echo "---------------------------------------------"
 	$(CC) $^ $(LDOPTS) -g -o $@
 
-Main : Main.o db_functions.o debug.o structs.o menu.o fonctions.o menu_fonctions.o
+main : main.o db_functions.o debug.o structs.o menu.o fonctions.o menu_fonctions.o
 	@echo ""
 	@echo "---------------------------------------------"
 	@echo "Creation de l'executable "$@

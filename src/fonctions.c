@@ -1,12 +1,27 @@
 #include "fonctions.h"
 
+// Lit une ligne de la console
+// Utilisation de getchar() uniquement
+// Pour compatibilité Windows
+void gets_s(char *chaine, int taille) {
+	int i = 0;
+	char c = getchar();
+	while (c != '\n' && i < taille) {
+		chaine[i] = c;
+		i++;
+		c = getchar();
+	}
+	chaine[i] = '\0';
+}
+
 // Saisie d'une chaîne de caractères
 // Retourne la chaîne saisie
 char *saisie_chaine(char *entree) {
 		char *chaine = malloc(101);
 		printf("%s -> ", entree);
-		fgets(chaine, 100, stdin);
-		chaine[strlen(chaine)-1] = '\0';
+		gets_s(chaine, 100);
+		//fgets(chaine, 100, stdin);
+		//chaine[strlen(chaine)-1] = '\0';
 		return chaine;
 }
 
