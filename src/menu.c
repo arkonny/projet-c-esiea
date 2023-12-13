@@ -25,10 +25,8 @@ int selection(int nbChoix) {
 
 // Menu principal
 void affichage_menu_principal() {
-	char *menu = "\n"
-		"=====================\n"
-		"   Menu principal\n"
-		"=====================\n"
+	print_titre_menu("Menu principal");
+	char *menu = 
 		"[1]. Livres\n"
 		"[2]. Compte\n"
 		"[3]. Quitter\n";
@@ -57,10 +55,8 @@ void menu_principal() {
 }
 
 void affichage_menu_principal_admin() {
-	char *menu = "\n"
-		"=====================\n"
-		"   Menu principal\n"
-		"=====================\n"
+	print_titre_menu("Menu principal");
+	char *menu =
 		"[1]. Livres\n"
 		"[2]. Compte\n"
 		"[3]. Administration\n"
@@ -95,25 +91,22 @@ void menu_principal_admin() {
 
 // Menu des livres
 void affichage_menu_livres() {
-	char *menu = "\n"
-		"=============\n"
-		"   Livres\n"
-		"=============\n"
+	print_titre_menu("Livres");
+	char *menu =
 		"[1]. Rechercher un livre\n"
 		"[2]. Emprunter un livre\n"
 		"[3]. Retourner un livre\n"
 		"[4]. Livres empruntés\n"
 		"[5]. Livres disponibles\n"
-		"[6]. Livres totaux\n"
-		"[7]. Retour\n";
+		"[6]. Retour\n";
 	printf("%s", menu);
 }
 
 void menu_livres() {
 	int choix = 0;
-	while(choix != 7) {
+	while(choix != 6) {
 		affichage_menu_livres();
-		choix = selection(7);
+		choix = selection(6);
 		switch(choix) {
 			case 1:
 				rechercher_livre();
@@ -136,10 +129,6 @@ void menu_livres() {
 				saisie_entree();
 				break;
 			case 6:
-				livres_totaux();
-				saisie_entree();
-				break;
-			case 7:
 				break;
 			default:
 				printf("Erreur\n");
@@ -151,10 +140,8 @@ void menu_livres() {
 
 // Menu du compte
 void affichage_menu_compte() {
-	char *menu = "\n"
-		"==============\n"
-		"   Compte\n"
-		"==============\n"
+	print_titre_menu("Compte");
+	char *menu = 
 		"[1]. Modifier le compte\n"
 		"[2]. Supprimer le compte\n"
 		"[3]. Afficher les informations du compte\n"
@@ -192,25 +179,22 @@ void menu_compte() {
 
 // Menu de l'administration
 void affichage_menu_administration() {
-	char *menu = "\n"
-		"====================\n"
-		"   Administration\n"
-		"====================\n"
+	print_titre_menu("Administration");
+	char *menu = 
 		"[1]. Ajouter un livre\n"
 		"[2]. Supprimer un livre\n"
 		"[3]. Rechercher un compte\n"
 		"[4]. Ajouter un compte\n"
 		"[5]. Supprimer un compte\n"
-		"[6]. Modifier un compte\n"
-		"[7]. Retour\n";
+		"[6]. Retour\n";
 	printf("%s", menu);
 }
 
 void menu_administration() {
 	int choix = 0;
-	while(choix != 7) {
+	while(choix != 6) {
 		affichage_menu_administration();
-		choix = selection(7);
+		choix = selection(6);
 		switch(choix) {
 			case 1:
 				ajouter_livre();
@@ -233,10 +217,6 @@ void menu_administration() {
 				saisie_entree();
 				break;
 			case 6:
-				modifier_compte_admin();
-				saisie_entree();
-				break;
-			case 7:
 				break;
 			default:
 				printf("Erreur\n");

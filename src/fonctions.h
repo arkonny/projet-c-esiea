@@ -15,6 +15,8 @@
 // Retourne la chaîne saisie
 char *saisie_chaine(char *entree);
 
+void gets_s(char *chaine, int taille);
+
 // Saisie d'un mot de passe
 // Retourne le mot de passe saisi
 char *saisie_chaine_double(char *entree);
@@ -33,6 +35,7 @@ char *date_actuelle();
 
 void print_titre(char *titre);
 void print_retour(char *titre);
+void print_titre_menu(char *titre);
 
 // Connexion de l'utilisateur
 // Demande le mail

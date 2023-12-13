@@ -48,7 +48,7 @@ void afficher_listeLivre(listeLivre *L);
 
 
 typedef struct celluleCompte_s{
-	Compte compte;
+	Compte *compte;
 	struct celluleCompte_s *suivant;
 } celluleCompte;
 
@@ -59,7 +59,7 @@ typedef struct listeCompte_s{
 
 void init_listeCompte_vide(listeCompte* L);
 void liberer_listeCompte(listeCompte *L);
-int ajouter_tete_listeCompte(listeCompte *L, Compte compte);
+int ajouter_tete_listeCompte(listeCompte *L, Compte *compte);
 void afficher_listeCompte(listeCompte *L);
 
 #endif

@@ -74,6 +74,40 @@ int SQL_init() {
   return rc;
 }
 
+char *read_file(char *filename) {
+	FILE *f = fopen(filename, "rb");
+	if (f == NULL) {
+		debug("Cannot open file %s\n", filename);
+		return NULL;
+	}
+	fseek(f, 0, SEEK_END);
+	long fsize = ftell(f);
+	fseek(f, 0, SEEK_SET);  //same as rewind(f);
+
+	char *string = malloc(fsize + 1);
+	fread(string, fsize, 1, f);
+	debug("read_file() read %ld bytes\n", fsize);
+	debug("read_file() read %s\n", string);
+	fclose(f);
+
+	return string;
+}
+
+int SQL_insertion_livres() {
+	char *err_msg = 0;
+	// Read the file requetes.sql
+	char *sql_insert = read_file("requetes.sql");
+	if (sql_insert == NULL) {
+		return 1;
+	}
+	int rc = sqlite3_exec(db, sql_insert, 0, 0, &err_msg);
+	if (db_error_handler_err_msg(rc, err_msg, "SQL error: ")) {
+		sqlite3_close(db);
+		return 2;
+	}
+	return 0;
+}
+
 int SQL_check_init() {
 	char *err_msg = 0;
 	char *sql_livres = "SELECT * FROM Comptes;";
@@ -334,7 +368,7 @@ int SQL_emprunt(Livre *livre) {
 
 
 int SQL_retour(Livre *livre) {
-	char *sql_insert = "UPDATE Livres SET Date_emprunt = NULL, Id_User = NULL WHERE ISBN = @ISBN;";
+	char *sql_insert = "UPDATE Livres SET Date_emprunt = NULL, Id_User = 0 WHERE ISBN = @ISBN;";
 
   // Prepare the query
 	//int rc = db_stmt_init(retour_stmt, sql_insert);

@@ -40,6 +40,4 @@ void ajouter_compte();
 
 void supprimer_compte_admin();
 
-void modifier_compte_admin();
-
 #endif

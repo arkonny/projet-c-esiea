@@ -20,6 +20,11 @@ char *saisie_chaine(char *entree) {
 		char *chaine = malloc(101);
 		printf("%s -> ", entree);
 		gets_s(chaine, 100);
+		while (strlen(chaine) == 0) {
+			printf("Entrée invalide.\n");
+			printf("%s -> ", entree);
+			gets_s(chaine, 100);
+		}
 		// Commenté pour la compatibilité avec Windows
 		//fgets(chaine, 100, stdin);
 		//chaine[strlen(chaine)-1] = '\0';
@@ -109,8 +114,27 @@ void print_titre(char *titre) {
 	printf("\n");
 }
 
-void print_retour(char *titre) {
-	printf("|=> %s\n", titre);
+// Fonction d'affichage d'un résultat de retour d'une action
+void print_retour(char *retour) {
+	printf("|=> %s\n", retour);
+}
+
+// Fonction d'affichage du titre des menus
+void print_titre_menu(char *titre) {
+	printf("\n\n");
+	int taille = strlen(titre);
+	for (int i = 0; i < 2*taille; i++) {
+		printf("=");
+	}
+	printf("\n");
+	for (int i = 0; i < taille/2; i++) {
+		printf(" ");
+	}
+	printf("%s\n", titre);
+	for (int i = 0; i < 2*taille; i++) {
+		printf("=");
+	}
+	printf("\n");
 }
 
 
