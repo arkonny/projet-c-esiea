@@ -1,84 +1,36 @@
-# projet-c-esiea
-Database diagram : [Draw.io](https://app.diagrams.net/#Harkonny%2Fprojet-c-esiea%2Fmain%2Fmedias%2FDataBase_Diagram.drawio)  
-![Diagrame utilisé pour la base de donnée](./medias/DataBase_Diagram.svg)
+# Projet C
+## Librairie numérique basée sur SQLite3
+__autheurs__: Lucien Renard-Raguenaud & Anthony Uriel
 
-On n'a qu'__UN__ exemplaire de chaque livre
-Un livre emprunté ne peut pas être emprunté par quelqu'un d'autre
+## Lien du projet sur Github :
+![Projet C](https://github.com/arkonny/projet-c-esiea)
 
-1. Ajout de livres :
-Classe livre :
-- titre
-- auteur
-- ISBN
-- genre
-- ID_user
-- date d'emprunt -> permettra de calculer la date de retour
+## Fonctionnalités de Base :
 
-2. Recherche de livres :
-Recherche de livre :
-input ->  titles | authors (selection de titre/auteur par user)
+1. Ajout de Livres
+2. Recherche de Livres
 
-3. Emprunt et Retour de Livres :
--> liste des utilisateurs
-Classe utilisateur :
-- nom
-- prénom
-- mail
-- authentification (mot de passe ? gestion sécurisée des mdp)
-- ID_user
+    - possible de rechercher par mots-clés 
 
--> Fonction d'emprunt, vérifiant la disponibilité du livre sélectionné
--> Fonction de retour, bouton permettant de confirmer avoir retourné un livre
--> Gestion de l'emprunt dans la classe livre
+3. Emprunt et Retour de Livres
 
-4. Affichage de la Liste des livres disponibles :
--> voir selon l'interface graphique utilisée
-(scroller parmis les livres, trier l'affichage, optionellement mettre une couverture aux livres)
+4. Affichage de la Liste des Livres
 
-5. Affichage des livres empruntés :
--> voir tout les livres empruntés
+    - en faisant une recherche vide
+5. Gestion des Livres Empruntés
 
-(implication du 4. et 5.)
--> Livre emprunté|disponible correspond à une option de recherche
--> Informations à propos de l'emprunteur et la date d'emprunt anonyme à moins d'avoir un compte administrateur (gestion des comptes admin ?)
--> compte admin correspond au premier compte créé par la bibliothèque, voir les droits de gestions de comptes etc...
+    - affiche la liste des livres actuellement empruntés, avec la date d'emprunt et les détails de l'emprunteur (si le compte actuel est un compte admin, sinon pas de détails sur l'emprunteur, juste la date d'emprunt)
 
-6. Sauvegarde des données :
-Utilisation d'une bibliothèque de gestion de base de donnée SQL
--> permet d'en utiliser la fonction de recherche notamment, plutôt que l'implémenter nous-même
-/!\ -> doit pouvoir être portable avec l'exécutable /!\
+6. Sauvegarde des Données
 
+    - via un fichier SQL
 7. Interface Utilisateur
--> trouver bibliothèque de gestion graphique pour afficher des listes, faire des recherches.
 
-## BONUS
-1. Gestion des utilisateurs :
-(création de compte, connexion et déconnexion)
-Page de connexion avant recherche
--> compte invité, sans mot de passe pour tout de même faire une recherche
-(pas de possibilité d'emprunt ou d'historique des livres empruntés)
+    - nous n'avons pas trouvé de librairie d'interface graphique utilisable sur windows en C. Utiliser Gtk+ aurais été trop complexe sur windows.
+    Donc notre programme interagit uniquement par terminal.
 
-**-> Utiliser les USER intégrés à SQL**
-
-Page listant les livres empruntés par le user (sur le côté)
-
-2. Recherche avancée :
-ajout de année de publication, mots-clé (recherche parmi tout les paramètres de la classe livre), disponibilité
-
-3. Statistiques de la Bibliothèque :
-Compte du nombre de fois qu'un livre a été emprunté dans la classe livre
--> permet de calculer les auteurs les plus popoulaires
-Nbr de livres empruntés = somme des livres dans la liste "empruntés"
-Nbr total de livres = somme de la liste des livres
-
-4. Date de Retour :
-- Calculée à partir de la date d'emprunt + la durée de l'emprunt
-(Durée fixe)
-
-date auj. - durée d'emprunt = date d'emprunt à notifier
-
-Plusieurs états de notification :
-- état good, rien à déclarer
-- état attention, date de retour proche (aux trois-quarts de la durée d'emprunt ?)
-- état aujourd'hui, date de retour maintenant
-- état en retard, date de retour dépassée
+## Bonus (pour les étudiants avancés) :
+1. Gestion des Utilisateurs
+    - les utilisateurs peuvent visualiser leurs informations
+2. Recherche Avancée
+    - Un livre peut être recherché par mot-clé, pas besoin de taper son titre ou n'importe quelle autre information en entier.
