@@ -24,7 +24,7 @@ void livres_totaux();
 // Menu compte
 void modifier_compte();
 
-void supprimer_compte();
+int supprimer_compte();
 
 void afficher_compte();
 
@@ -39,7 +39,5 @@ void rechercher_compte();
 void ajouter_compte();
 
 void supprimer_compte_admin();
-
-void modifier_compte_admin();
 
 #endif

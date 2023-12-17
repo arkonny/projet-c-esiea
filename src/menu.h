@@ -13,7 +13,7 @@ int selection(int nbChoix);
 void menu_principal();
 void menu_principal_admin();
 void menu_livres();
-void menu_compte();
+int menu_compte();
 void menu_administration();
 
 #endif

@@ -18,6 +18,7 @@ extern Compte *currentUser;
 // La base de donnée est ouverte une seule fois au lancement du programme
 // et fermée à la fin de celui-ci
 int SQL_init();
+int SQL_insertion_livres();
 int SQL_check_init();
 int SQL_open();
 int SQL_close();

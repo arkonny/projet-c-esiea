@@ -50,11 +50,23 @@ int main(int argc, char **argv) {
 		res = SQL_init();
 		init_Compte(currentUser, 1, nom, prenom, mail, mdp_hash, 1);
 		SQL_insertion_compte(currentUser);
-		print_retour("Compte administrateur créé");
+		print_retour("Compte administrateur créé\n");
 		free(nom);
 		free(prenom);
 		free(mail);
 		free(mdp);
+
+		// Insertion des livres
+		if (saisie_binaire("Insertion automatique des livres ?\n(Lit le fichier requetes.sql)  [O/N]")) {
+			res = SQL_insertion_livres();
+			if (res == 1) {
+				print_retour("Impossible de lire le fichier requetes.sql\n");
+			} else if (res == 2) {
+				print_retour("Erreur lors de l'exécution du contenu du fichier\n");
+			} else {
+				print_retour("Fichier requetes.sql exécuté\n");
+			}
+		}
 	}
 
 
