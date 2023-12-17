@@ -24,7 +24,7 @@ void livres_totaux();
 // Menu compte
 void modifier_compte();
 
-void supprimer_compte();
+int supprimer_compte();
 
 void afficher_compte();
 

@@ -77,12 +77,12 @@ void livres_empruntes() {
 	init_listeLivre_vide(resultat);
 	if (SQL_livres_empruntes(currentUser, resultat) == SQLITE_DONE) {
 		if (resultat->taille == 0) {
-			print_retour("Vous n'avez emprunté aucun livre\n");
+			printf("Vous n'avez emprunté aucun livre\n");
 		} else {
 			afficher_listeLivre(resultat);
 		}
 	} else {
-		print_retour("Erreur lors de la récupération des livres empruntés\n");
+		printf("Erreur lors de la récupération des livres empruntés\n");
 	}
 	liberer_listeLivre(resultat);
 }
@@ -96,12 +96,12 @@ void livres_disponibles() {
 	init_Compte(user, 0, "", "", "", "", 0);
 	if (SQL_livres_empruntes(user, resultat) == SQLITE_DONE) {
 		if (resultat->taille == 0) {
-			print_retour("Aucun livre n'est disponible\n");
+			printf("Aucun livre n'est disponible\n");
 		} else {
 			afficher_listeLivre(resultat);
 		}
 	} else {
-		print_retour("Erreur lors de la récupération des livres disponibles\n");
+		printf("Erreur lors de la récupération des livres disponibles\n");
 	}
 	free(user);
 	liberer_listeLivre(resultat);
@@ -125,11 +125,39 @@ void livres_totaux() {
 
 // Menu compte
 void modifier_compte() {
-	print_retour("Fonctionnalité non implémentée\n");
+	print_titre("Modification de compte");
+	if (saisie_binaire("Voulez-vous changer votre mail ? [O/N]")) {
+		char *new_mail = saisie_chaine_double("Nouveau mail");
+		if (SQL_changement_mail(currentUser, new_mail) == SQLITE_DONE) {
+			print_retour("Mail changé avec succès\n");
+		} else {
+			print_retour("Erreur lors du changement de mail\n");
+		}
+		free(new_mail);
+	}
+	if (saisie_binaire("Voulez-vous changer votre mot de passe ? [O/N]")) {
+		char *new_mdp = saisie_chaine_double("Nouveau mot de passe");
+		char *new_hash = hash(new_mdp, currentUser->id_user);
+		if (SQL_changement_mdp(currentUser, new_hash) == SQLITE_DONE) {
+			print_retour("Mot de passe changé avec succès\n");
+		} else {
+			print_retour("Erreur lors du changement de mot de passe\n");
+		}
+		free(new_mdp);
+	}
 }
 
-void supprimer_compte() {
-	print_retour("Fonctionnalité non implémentée\n");
+int supprimer_compte() {
+	print_titre("Suppression de compte");
+	if (saisie_binaire("Voulez-vous vraiment supprimer votre compte ? [O/N]")) {
+		if (SQL_suppression_compte(currentUser) == SQLITE_DONE) {
+			print_retour("Compte supprimé avec succès\n");
+			return 1;
+		} else {
+			print_retour("Erreur lors de la suppression du compte\n");
+		}
+	}
+	return 0;
 }
 
 void afficher_compte() {
@@ -163,6 +191,7 @@ void ajouter_livre() {
 
 	free(livre);
 }
+
 
 void supprimer_livre() {
 	print_titre("Suppression de livre");

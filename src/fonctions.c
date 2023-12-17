@@ -66,13 +66,13 @@ void saisie_entree() {
 // Retourne 1 si O, 0 si N
 int saisie_binaire(char *entree) {
 	char *chaine = saisie_chaine(entree);
-	while (strcmp(chaine, "O") != 0 && strcmp(chaine, "N") != 0) {
+	while (strcmp(chaine, "O") != 0 && strcmp(chaine, "N") != 0 && strcmp(chaine, "o") != 0 && strcmp(chaine, "n") != 0 && strcmp(chaine, "oui") != 0 && strcmp(chaine, "non") != 0) {
 		free(chaine);
 		printf("Entrée invalide.\n");
 		chaine = saisie_chaine(entree);
 	}
 	int i = 0;
-	if (strcmp(chaine, "O") == 0) {
+	if (strcmp(chaine, "O") == 0 || strcmp(chaine, "o") == 0 || strcmp(chaine, "oui") == 0) {
 		i = 1;
 	}
 	free(chaine);

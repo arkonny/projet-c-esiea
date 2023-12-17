@@ -74,7 +74,9 @@ void menu_principal_admin() {
 				menu_livres();
 				break;
 			case 2:
-				menu_compte();
+				if (menu_compte()) {
+					return;
+				}
 				break;
 			case 3:
 				menu_administration();
@@ -149,7 +151,7 @@ void affichage_menu_compte() {
 	printf("%s", menu);
 }
 
-void menu_compte() {
+int menu_compte() {
 	int choix = 0;
 	while(choix != 4) {
 		affichage_menu_compte();
@@ -160,7 +162,9 @@ void menu_compte() {
 				saisie_entree();
 				break;
 			case 2:
-				supprimer_compte();
+				if (supprimer_compte()) {
+					return 1;
+				}
 				saisie_entree();
 				break;
 			case 3:
@@ -174,6 +178,7 @@ void menu_compte() {
 				break;
 		}
 	}
+	return 0;
 }
 
 

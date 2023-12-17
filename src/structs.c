@@ -1,6 +1,8 @@
 #include "structs.h"
 #include "debug.h"
 
+extern Compte *currentUser;
+
 int init_Livre(Livre *livre, char *isbn, char *titre, char *auteur, char *genre, int id_user, char *date_emprunt) {
 	if (isbn == NULL) isbn = "";
 	if (titre == NULL) titre = "";
@@ -18,10 +20,18 @@ int init_Livre(Livre *livre, char *isbn, char *titre, char *auteur, char *genre,
 }
 
 void print_Livre(Livre *livre) {
-	if (livre->id_user == 0) {
-		printf("%-13.13s| %-25.25s| %-25.25s| %-15.15s| Disponible\n", livre->isbn, livre->titre, livre->auteur, livre->genre);
+	if (currentUser->admin) {
+		if (livre->id_user == 0) {
+			printf("%-13.13s| %-25.25s| %-25.25s| %-15.15s| Disponible\n", livre->isbn, livre->titre, livre->auteur, livre->genre);
+		} else {
+			printf("%-13.13s| %-25.25s| %-25.25s| %-15.15s| Emprunté par %d le %s\n", livre->isbn, livre->titre, livre->auteur, livre->genre, livre->id_user, livre->date_emprunt);
+		}
 	} else {
-		printf("%-13.13s| %-25.25s| %-25.25s| %-15.15s| Emprunté le %-15.15s\n", livre->isbn, livre->titre, livre->auteur, livre->genre, livre->date_emprunt);
+		if (livre->id_user == 0) {
+			printf("%-13.13s| %-25.25s| %-25.25s| %-15.15s| Disponible\n", livre->isbn, livre->titre, livre->auteur, livre->genre);
+		} else {
+			printf("%-13.13s| %-25.25s| %-25.25s| %-15.15s| Emprunté le %-15.15s\n", livre->isbn, livre->titre, livre->auteur, livre->genre, livre->date_emprunt);
+		}
 	}
 }
 

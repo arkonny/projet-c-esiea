@@ -9,6 +9,7 @@ sqlite3_stmt *livres_empruntes_stmt = NULL;
 sqlite3_stmt *creation_compte_stmt = NULL;
 sqlite3_stmt *compte_recherche_stmt = NULL;
 sqlite3_stmt *changement_mail_stmt = NULL;
+sqlite3_stmt *changement_mdp_stmt = NULL;
 
 /************************
 * Fonctions d'usage SQL *
@@ -136,6 +137,7 @@ int SQL_close() {
 	sqlite3_finalize(creation_compte_stmt);
 	sqlite3_finalize(compte_recherche_stmt);
 	sqlite3_finalize(changement_mail_stmt);
+	sqlite3_finalize(changement_mdp_stmt);
 
 	sqlite3_close(db);
 	free(currentUser);
@@ -503,18 +505,18 @@ int SQL_changement_mdp(Compte *user, char *new_hash) {
 	// Prepare the query
 	// int rc = db_stmt_init(changement_mail_stmt, sql_update);
 	int rc;
-	if (changement_mail_stmt == NULL) {
-		rc = sqlite3_prepare_v2(db, sql_update, -1, &changement_mail_stmt, 0);
+	if (changement_mdp_stmt == NULL) {
+		rc = sqlite3_prepare_v2(db, sql_update, -1, &changement_mdp_stmt, 0);
 	} else {
-		rc = sqlite3_reset(changement_mail_stmt);
+		rc = sqlite3_reset(changement_mdp_stmt);
 	}
 	if (!db_error_handler(db, rc, "Failed to execute statement: ")) {
 		// Bind the parameters
-		sqlite3_bind_text(changement_mail_stmt, 1, new_hash, -1, SQLITE_STATIC);
-		sqlite3_bind_text(changement_mail_stmt, 2, user->mail, -1, SQLITE_STATIC);
+		sqlite3_bind_text(changement_mdp_stmt, 1, new_hash, -1, SQLITE_STATIC);
+		sqlite3_bind_text(changement_mdp_stmt, 2, user->mail, -1, SQLITE_STATIC);
 		debug("Inserted arguments\n");
 	}
-	rc = sqlite3_step(changement_mail_stmt);
+	rc = sqlite3_step(changement_mdp_stmt);
 	strncpy(user->hash, new_hash, 100);
 	return rc;
 }
